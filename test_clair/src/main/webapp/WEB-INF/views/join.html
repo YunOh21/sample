@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:th="http://www.thymeleaf.org"
+    xmlns:sec="http://www.thymeleaf.org">
+	<head>
+		<!-- meta block -->
+		<title>회원가입</title>
+		<meta name="description" content="">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" charset="utf-8">
+		
+		<link rel="shortcut icon" href="/common/favicon/favicon.ico" type="image/x-icon" />
+		<link rel="icon" href="/common/favicon/icon-16.png" sizes="16x16" />
+		<link rel="icon" href="/common/favicon/icon-32.png" sizes="32x32" />
+		<link rel="icon" href="/common/favicon/icon-48.png" sizes="48x48" />
+		<link rel="icon" href="/common/favicon/icon-96.png" sizes="96x96" />
+		<link rel="icon" href="/common/favicon/icon-144.png" sizes="144x144" />
+		<!-- end meta block -->
+		<script type="text/javascript" src="/codebase/suite.js?v=7.2.5"></script>
+		<link rel="stylesheet" href="/codebase/suite.css?v=7.2.5">
+		
+		<link rel="stylesheet" href="/common/index.css?v=7.2.5">
+		<!-- custom sample head -->
+	</head>
+	<meta charset="utf-8">
+	<style>
+	#btn {
+		float:right;
+	}
+	</style>
+	<body>
+		<header class="dhx_sample-header">
+			<div class="dhx_sample-header__main">
+				<nav class="dhx_sample-header__breadcrumbs">
+					<ul class="dhx_sample-header-breadcrumbs">
+								<li class="dhx_sample-header-breadcrumbs__item">
+									<a href="/" class="dhx_sample-header-breadcrumbs__link">홈 화면으로</a>
+								</li>
+							</ul>
+				</nav>
+				<h1 class="dhx_sample-header__title">
+					<div class="dhx_sample-header__content">
+						회원가입
+					</div>
+				</h1>
+				<nav class="dhx_sample-header__breadcrumbs">
+					<ul class="dhx_sample-header-breadcrumbs">
+								<li class="dhx_sample-header-breadcrumbs__item">
+									<a href="/user/signin" class="dhx_sample-header-breadcrumbs__link">로그인 화면으로</a>
+								</li>
+							</ul>
+				</nav>
+			</div>
+		</header>
+		<section class="dhx_sample-container">
+			<!-- 타임리프 사용 테스트 <div th:text="${fail}"></div>-->
+			<div id="form" style="height: 100%; margin: 20px;"></div>
+		</section>
+		<script src="https://code.jquery.com/jquery-latest.js"></script>
+		<script>
+			const form = new dhx.Form("form", {
+				css: "dhx_widget--bordered",
+				padding: 40,
+				width: 600,
+				rows: [
+					{
+						type: "input",
+						label: "ID",
+						labelWidth: "100px",
+						value: "",
+						validation: function(value) {
+							const regex = /^(?=.*\d)(?=.*[a-z]).{4,}$/gm;
+							return regex.test(value);
+						},
+						errorMessage: "ID는 영문/숫자 조합으로 4자리 이상, 16자리 이하여야 합니다.",
+						name: "id",
+						minlength: "4",
+						maxlength: "16",
+						required: "true",
+						labelPosition: "left"
+					},
+					{
+						type: "input",
+						inputType: "password",
+						label: "PASSWORD",
+						labelWidth: "100px",
+						validation: function(value) {
+							const regex = /(?=.{8,})((?=.*\d)(?=.*[a-z])(?=.*[A-Z])|(?=.*\d)(?=.*[a-zA-Z])(?=.*[\W_])|(?=.*[a-z])(?=.*[A-Z])(?=.*[\W_])).*/;
+							// const regex = /^(?=.*\d)(?=.*[a-zA-Z])(?=.*[\W]).{8,}$/gm; -- 4가지 모두를 충족하는 경우
+							return regex.test(value);
+						},
+						errorMessage: "암호는 영문 대소문자/숫자/특수문자 중 3가지 이상 포함하여 8자리 이상, 16자리 이하여야 합니다.",
+						name: "pwd",
+						minlength: "8",
+						maxlength: "16",
+						required: "true",
+						labelPosition: "left"
+					},
+					{
+						type: "input",
+						label: "이름",
+						value: "",
+						labelWidth: "100px",
+						validation: function(value) {
+							return value != "";
+						},
+						errorMessage: "이름이 입력되지 않았거나 너무 깁니다.",
+						name: "name",
+						maxlength: "128",
+						required: "true",
+						labelPosition: "left"
+					},
+					{
+						type: "select",
+						label: "레벨",
+						labelWidth: "100px",
+						name: "level",
+			            width:"300px",
+						options: [
+											{
+			                    value: "",
+			                    content: ""
+			                },
+			                {
+			                    value: "A",
+			                    content: "A"
+			                },
+			                {
+			                    value: "B",
+			                    content: "B"
+			                },
+			                {
+			                    value: "C",
+			                    content: "C"
+			                },
+			                {
+			                    value: "D",
+			                    content: "D"
+			                }
+			            ],
+			            validation: function(value) {
+							return value != "";
+						},
+						errorMessage: "레벨이 선택되지 않았습니다.",
+						required: "true",
+						labelPosition: "left"
+					},
+					{
+						type: "textarea",
+						label: "특이사항",
+						labelWidth: "100px",
+						name: "desc",
+						height: "150px",
+						value: "",
+						validation: function(value) {
+							return value.length <= 256;
+						},
+						errorMessage: "256자 이내로 작성해주세요.",
+						labelPosition: "left"
+					},
+					{
+						type: "datepicker",
+						label: "등록일자",
+						labelWidth: "100px",
+						name: "regDate",
+						dateFormat: "%Y-%m-%d",
+						width: "300px",
+						labelPosition: "left",
+						value: "",
+						disabledDates: function(date){
+							let max = new Date();
+							return date > max
+						},
+						validation: function(value){ // send 클릭 시에만 작동함
+							return value != "";
+						},
+						required: true,
+						errorMessage: "등록일자가 선택되지 않았습니다."
+					},
+					{
+						type: "button",
+						text: "회원가입",
+						//submit: true, // send 누르면 submit하는 설정 // 이 설정 있거나 없거나 아래 form.send() 없으면 form data 서버로 전달 안됨
+						size: "medium",
+						view: "flat",
+						color: "primary",
+						name: "send",
+						disabled: true,
+						id: "btn",
+						//url: "join/result"
+					},
+				]
+			});
+			
+			const send = form.getItem("send");
+			
+			// SEND 버튼 입력 값 확인 후 활성화
+			// ISSUE: dhtmlx의 afterValidate나 events.on("input")는 화면의 다른 부분 클릭해야 동작
+			// 현재 send 버튼은 정상 동작하나, validate는 커서 이동 후에 동작하므로 validation 없이 errorMessage 구현을 send 버튼과 동시 동작하도록 수정 필요
+			$(document).ready(function(){
+				const regexId = /^(?=.*\d)(?=.*[a-z]).{4,}$/gm;
+				const regexPwd = /(?=.{8,})((?=.*\d)(?=.*[a-z])(?=.*[A-Z])|(?=.*\d)(?=.*[a-zA-Z])(?=.*[\W_])|(?=.*[a-z])(?=.*[A-Z])(?=.*[\W_])).*/;
+				
+				$("input").on("input", (function(){
+					//console.log("onInput");
+					regexId.test(form.getItem("id").getValue())==true && regexPwd.test(form.getItem("pwd").getValue())==true && form.getItem("name").getValue()!=""
+					&& form.getItem("level").getValue()!="" && form.getItem("regDate").getValue()!=""? send.enable() : send.disable();
+				}));
+				
+				$("select").on("change", (function(){
+					//console.log("level selected");
+					regexId.test(form.getItem("id").getValue())==true && regexPwd.test(form.getItem("pwd").getValue())==true && form.getItem("name").getValue()!=""
+					&& form.getItem("level").getValue()!="" && form.getItem("regDate").getValue()!=""? send.enable() : send.disable();
+				}));
+				
+				form.getItem("regDate").events.on("change", function(){
+					//console.log("date changed");
+					regexId.test(form.getItem("id").getValue())==true && regexPwd.test(form.getItem("pwd").getValue())==true && form.getItem("name").getValue()!=""
+					&& form.getItem("level").getValue()!="" && form.getItem("regDate").getValue()!=""? send.enable() : send.disable();
+				});
+				
+				// forEach로 array에 담는 경우
+/* 				var inputCount = 0;
+				var inputArray = [];
+				var isAllValid = false;
+				
+				form.forEach(function(item, index, array){
+					let type = item.config.type;
+					
+					switch (type) {
+					case "input":
+					case "select":
+					case "datepicker":
+						inputCount++;
+						
+						item.events.on(["change" , "input"],function(e){
+							console.log('e is'+ e);
+						});
+						
+					default:
+						break;
+					}
+					
+					
+				}) */
+				
+				// forEach
+/* 				form.forEach(function(item, index, array) {
+					if(item.config.type=="input"){
+						//console.log(item.config.value);
+						form.events.on("input", function(){
+							form.getItem("id").getValue()!="" && form.getItem("pwd").getValue()!=""? send.enable() : send.disable();
+						});
+					} */
+				
+				// findAll
+/* 				var items = form.findAll(function(items){
+				    if(items.config.type === "input"){
+				    	console.log('type is input');
+				    	return true;
+				    }
+				}); */
+				 
+				
+			});
+// 			form.events.on("change", function(){
+// 				const regexId = /^(?=.*\d)(?=.*[a-z]).{4,}$/gm;
+// 				const regexPwd = /(?=.{8,})((?=.*\d)(?=.*[a-z])(?=.*[A-Z])|(?=.*\d)(?=.*[a-zA-Z])(?=.*[\W_])|(?=.*[a-z])(?=.*[A-Z])(?=.*[\W_])).*/;
+// 				regexId.test(form.getItem("id").getValue())==true && regexPwd.test(form.getItem("pwd").getValue())==true && form.getItem("name").getValue()!=""
+// 				&& form.getItem("level").getValue()!="" && form.getItem("regDate").getValue()!=""? send.enable() : send.disable();
+// 			});
+			
+			// ID,PASSWORD에 한글입력 불가
+			form.getItem("id").events.on("input", function(){
+				const inputVal = form.getItem("id").getValue();
+				const hangeul = /[ㄱ-ㅎ|ㅏ-ㅣ|가-힣]/;
+				if(hangeul.test(inputVal)){
+					form.getItem("id").clear();
+				}
+			});
+			
+			send.events.on("click", function(){
+				const jsonData = JSON.stringify(form.getValue());
+				//alert(jsonData);
+				$.ajax({
+					type: "POST",
+					url: '/user/signup',
+					contentType: 'application/json', // 서버로 전송하는 데이터 형식
+					data: jsonData, // 전송하는 데이터
+					dataType: "application/json;charset=utf-8", // 서버에서 반환하는 데이터 형식
+					success:function(data){
+						location.replace("/" + data.id); // href와의 차이: 이전 페이지로 이동할 수 없다
+					}, error:function(data){
+						alert(JSON.stringify(data));
+						alert(data.responseText);
+						alert(JSON.parse(data.responseText).code);
+						switch (data.status){
+							case 400:
+								//alert('파라미터 오류');
+								var msg = "";
+								msg += "에러코드: " + JSON.parse(data.responseText).code + "\n"
+										+ "관련항목: " + JSON.parse(data.responseText).fields.field + "\n"
+										+ "사유: " + JSON.parse(JSON.stringify(JSON.parse(data.responseText).fields)).reason;
+								alert(msg);
+								break;
+							case 500:
+								alert('서버측 기타오류');
+								break;
+							default:
+								alert('HTTP 에러 상태 코드: '+data.status);
+								break;
+						}
+					}
+				})
+			});
+		</script>
+	</body>
+</html>
