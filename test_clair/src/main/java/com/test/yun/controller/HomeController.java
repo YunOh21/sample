@@ -96,10 +96,10 @@ public class HomeController {
 	@ResponseBody
 	public ResponseEntity<String> join(@Valid @RequestBody UserBean userBean) {
 		ResponseEntity<String> result;
-		/* ID/PWD null 테스트 */
-		userBean.setId("");
-		userBean.setPwd("");
-		userBean.setLevel("");
+		/* null 테스트 */
+//		userBean.setId("");
+//		userBean.setPwd("");
+//		userBean.setLevel("");
 		/* 날짜에 시간 더함 */
 		userBean.setRegDate(userBean.getRegDate() + " 00:00:00");
 		HashMap<String, String> invalidJoinMap = joinValidCheck.validCheck(userBean);
