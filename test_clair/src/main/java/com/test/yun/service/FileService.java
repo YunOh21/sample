@@ -17,7 +17,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.test.yun.dto.FileBean;
 import com.test.yun.dto.UserBean;
 import com.test.yun.mapper.UserMapper;
-import com.test.yun.util.ValidCheck;
+import com.test.yun.util.JoinValidCheck;
 
 @Service
 public class FileService {
@@ -26,7 +26,7 @@ public class FileService {
 	private UserMapper userMapper;
 
 	@Autowired
-	private ValidCheck validCheck;
+	private JoinValidCheck validCheck;
 
 	// 파일 저장: Mutilpartfile을 File로 변환하여 서버 PC 특정 경로에 저장
 	public FileBean save(MultipartFile file) {

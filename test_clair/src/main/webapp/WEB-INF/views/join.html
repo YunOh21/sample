@@ -310,10 +310,11 @@
 					}, error:function(data){
 						switch (data.status){
 							case 400:
-								var msg = "에러코드: " + JSON.parse(data.responseText).code + "\n";
+								var msg = "[에러코드: " + JSON.parse(data.responseText).code + "]\n";
+								msg += "아래 " + JSON.parse(data.responseText).fields.length + "개 항목을 다시 확인해주세요." + "\n";
 								for(i=0; i<JSON.parse(data.responseText).fields.length; i++){
-									msg += "관련항목: " + JSON.parse(data.responseText).fields[i].field + "\n"
-											+ "사유: " + JSON.parse(data.responseText).fields[i].reason;
+									msg += (i+1)+". " + JSON.parse(data.responseText).fields[i].field + "\n"
+											+ "- 사유: " + JSON.parse(data.responseText).fields[i].reason + "\n";
 								}
 								alert(msg);
 								break;

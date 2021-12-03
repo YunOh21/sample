@@ -1,12 +1,13 @@
 package com.test.yun.controller;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import javax.validation.Valid;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -16,6 +17,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -26,48 +31,47 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.test.yun.dto.UserBean;
-import com.test.yun.dto.InvalidBean;
 import com.test.yun.mapper.UserMapper;
 import com.test.yun.service.FileService;
 import com.test.yun.service.HomeService;
-import com.test.yun.util.ValidCheck;
+import com.test.yun.util.JoinValidCheck;
 
 @Controller
 public class HomeController {
-	private static final Logger logger = LoggerFactory.getLogger(HomeController.class);	// 운영 로그
-	
+	private static final Logger logger = LoggerFactory.getLogger(HomeController.class); // 운영 로그
+
 	@Autowired
 	private HomeService homeService;
-	
+
 	@Autowired
 	private UserMapper userMapper;
-	
+
 	@Autowired
-	private ValidCheck validCheck;
-	
+	private JoinValidCheck joinValidCheck;
+
 	@Autowired
 	private FileService fileService;
-	
+
 	// 최초 접속 -- 로그인한 경우 유저 홈 화면으로 이동
 	@RequestMapping(value = "/", method = RequestMethod.GET)
 	public String home(HttpSession session, RedirectAttributes ra) {
 		return homeService.home(session, ra);
 	}
-	
+
 	// 사용자 로그인폼 -- 로그인한 경우 유저 홈 화면으로 이동
 	@RequestMapping(value = "/user/signin", method = RequestMethod.GET)
 	public String login(HttpSession session, RedirectAttributes ra) {
 		return homeService.login(session, ra);
 	}
-	
-	// 사용자 로그인 -- 세션 인증 처리 필요, 우측 상단에 로그인한 사용자 이름 + 로그아웃 버튼
+
+	// 사용자 로그인
 	@RequestMapping(value = "/user/signin", method = RequestMethod.POST)
 	@ResponseBody
-	public ResponseEntity<String> loginResult(@RequestBody UserBean userBean, HttpServletRequest req) {
+	public ResponseEntity<String> login(@RequestBody UserBean userBean, HttpServletRequest req) {
 		ResponseEntity<String> result = ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
 		HttpSession session = req.getSession();
-		if(userMapper.loginUser(userBean).size()==1) { // id 존재 확인
-			if(homeService.checkPwd(userBean, userMapper.loginUser(userBean).get(0))){ // pwd 일치 확인
+		if (userMapper.loginUser(userBean).size() == 1) { // id 존재 확인
+			if (homeService.checkPwd(userBean, userMapper.loginUser(userBean).get(0))) { // pwd 일치 확인
 				session.setAttribute("id", userBean.getId());
 				session.setAttribute("name", userMapper.loginUser(userBean).get(0).getName());
 				Map<String, Object> joMap = new HashMap<String, Object>();
@@ -80,27 +84,32 @@ public class HomeController {
 		System.out.println(result.toString());
 		return result;
 	}
-	
+
 	// 사용자 가입폼
 	@RequestMapping(value = "/user/signup", method = RequestMethod.GET)
 	public String join(HttpSession session, RedirectAttributes ra) {
 		return homeService.join(session, ra);
 	}
-	
+
 	// 사용자 가입 -- 1001: pk 중복 / 1002: data not valid
 	@RequestMapping(value = "/user/signup", method = RequestMethod.POST, produces = "application/text; charset=utf8")
 	@ResponseBody
-	public ResponseEntity<String> joinResult(@RequestBody UserBean userBean) {
+	public ResponseEntity<String> join(@Valid @RequestBody UserBean userBean) {
 		ResponseEntity<String> result;
-		//userBean.setRegDate(userBean.getRegDate() + " 00:00:00"); //날짜형식 잘못 테스트 시 주석처리
-		ArrayList<InvalidBean> invalidList = validCheck.validCheck(userBean);
-		if(invalidList.size()==0) {
-			if(fileService.insertUser(userBean)) {
+		/* ID/PWD null 테스트 */
+		userBean.setId("");
+		userBean.setPwd("");
+		userBean.setLevel("");
+		/* 날짜에 시간 더함 */
+		userBean.setRegDate(userBean.getRegDate() + " 00:00:00");
+		HashMap<String, String> invalidJoinMap = joinValidCheck.validCheck(userBean);
+		if (invalidJoinMap.size() == 0) {
+			if (fileService.insertUser(userBean)) {
 				JSONObject jo = new JSONObject();
 				jo.put("uri", "/");
 				jo.put("id", userBean.getId());
 				result = new ResponseEntity(jo.toString(), HttpStatus.OK);
-			}else {
+			} else {
 				JSONObject parent = new JSONObject();
 				JSONArray children = new JSONArray();
 				JSONObject child = new JSONObject();
@@ -113,13 +122,13 @@ public class HomeController {
 				parent.put("fields", children);
 				result = new ResponseEntity(parent.toString(), HttpStatus.BAD_REQUEST);
 			}
-		}else {
+		} else {
 			JSONObject parent = new JSONObject();
 			JSONArray children = new JSONArray();
-			JSONObject child = new JSONObject();
-			for(int i=0; i<invalidList.size(); i++) {
-				child.put("field", invalidList.get(i).getInvalidField());
-				child.put("reason", invalidList.get(i).getInvalidReason());
+			for (Entry<String, String> entry : invalidJoinMap.entrySet()) {
+				JSONObject child = new JSONObject();
+				child.put("field", entry.getKey());
+				child.put("reason", entry.getValue());
 				children.add(child);
 			}
 			parent.put("code", 1002);
@@ -131,25 +140,45 @@ public class HomeController {
 		System.out.println(result.toString());
 		return result;
 	}
-	
+
+	// 회원가입 Validation 예외처리 -- 현재 에러케이스는 처음 컨트롤러에 전달된 상황에서는 발생하지 않음. 추후 적용 시 json으로 변환 필요.
+	@ExceptionHandler(MethodArgumentNotValidException.class)
+	@ResponseBody
+	public String handleValidationException(MethodArgumentNotValidException exception) {
+		BindingResult bindingResult = exception.getBindingResult();
+
+		StringBuilder builder = new StringBuilder();
+		for (FieldError fieldError : bindingResult.getFieldErrors()) {
+			builder.append("[");
+			builder.append(fieldError.getField());
+			builder.append("](은)는 ");
+			builder.append(fieldError.getDefaultMessage());
+			builder.append(" 입력된 값: [");
+			builder.append(fieldError.getRejectedValue());
+			builder.append("]");
+		}
+
+		return builder.toString();
+	}
+
 	// 로그인, 회원가입 후
 	@RequestMapping(value = "/{id}", method = RequestMethod.GET)
 	public ModelAndView userHome(HttpSession session) {
 		return homeService.login(session);
 	}
-	
+
 	// 로그아웃
 	@RequestMapping(value = "/logout", method = RequestMethod.GET)
 	public ModelAndView logout(HttpSession session) {
 		return homeService.logout(session);
 	}
-	
+
 	// 파일 업로드 --> 회원가입
 	@RequestMapping(value = "/file/upload", method = RequestMethod.POST)
 	public ModelAndView upload(@RequestParam("userFile") MultipartFile file) {
 		return homeService.upload(file);
 	}
-	
+
 	// 성공 시 조회버튼 ajax // dhtmlx grid로 데이터 뿌려주도록 // grid의 페이징 기능 사용
 	@RequestMapping(value = "/file/success", method = RequestMethod.GET, produces = "application/text; charset=utf8")
 	@ResponseBody
