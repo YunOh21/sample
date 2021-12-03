@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.web.servlet.view.RedirectView;
 
 import com.test.yun.dto.FileBean;
 import com.test.yun.dto.UserBean;
@@ -18,14 +20,31 @@ public class HomeService {
 	@Autowired
 	private FileService fileService;
 
-	// 최초 접속
-	public ModelAndView home() {
-		ModelAndView mav = new ModelAndView();
-		mav.setViewName("home.jsp");
-		return mav;
+	// 홈화면
+	public String home(HttpSession session, RedirectAttributes ra) {
+		String id = (String)session.getAttribute("id");
+		return id==null? "home.jsp" : redirectHome(id, ra);
 	}
 	
-	// 로그인
+	// 로그인폼
+	public String login(HttpSession session, RedirectAttributes ra) {
+		String id = (String)session.getAttribute("id");
+		return id==null? "login.html" : redirectHome(id, ra);
+	}
+	
+	// 회원가입폼
+	public String join(HttpSession session, RedirectAttributes ra) {
+		String id = (String)session.getAttribute("id");
+		return id==null? "join.html" : redirectHome(id, ra);
+	}
+	
+	// 세션에 유효한 id가 있을 때, 유저홈으로 리다이렉트 (홈화면, 로그인폼, 회원가입폼에 get 방식으로 접근 시)
+	public String redirectHome(String id, RedirectAttributes ra) {
+		ra.addFlashAttribute("msg", "잘못된 접근입니다. 홈 화면으로 이동합니다.");
+		return "redirect:/" + id;
+	}
+	
+	// 로그인 성공
 	public ModelAndView login(HttpSession session) {
 		ModelAndView mav = new ModelAndView();
 		mav.addObject("success", session.getAttribute("name")+"님");
@@ -33,11 +52,11 @@ public class HomeService {
 		return mav;
 	}
 	
-	// 
+	// 로그아웃
 	public ModelAndView logout(HttpSession session) {
 		session.invalidate();
 		ModelAndView mav = new ModelAndView();
-		mav.setViewName("home.jsp");
+		mav.setViewName("redirect:/");
 		return mav;
 	}
 

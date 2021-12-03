@@ -84,6 +84,12 @@ $(document).ready(function(){
 		 user.hide();
 		 login.show();
 	 }
+	 var msg = "${msg}";
+	 console.log(msg);
+	 if(msg!=null && msg!=""){
+		 alert(msg);
+	 }
+	 
 }); 
 // submit
 var send = document.getElementById("do");

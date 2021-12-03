@@ -277,7 +277,25 @@
 					form.getItem("id").clear();
 				}
 			});
+			form.getItem("pwd").events.on("input", function(){
+				const inputVal = form.getItem("pwd").getValue();
+				const hangeul = /[ㄱ-ㅎ|ㅏ-ㅣ|가-힣]/;
+				if(hangeul.test(inputVal)){
+					form.getItem("pwd").clear();
+				}
+			});
 			
+			// 이름에 숫자,특수문자 입력 불가
+			form.getItem("name").events.on("input", function(){
+				const inputVal = form.getItem("name").getValue();
+				const num = /\d/;
+				const special = /[\{\}\[\]\/?.,;:|\)*~`!^\-_+┼<>@\#$%&\'\"\\\(\=]/gi;
+				if(num.test(inputVal) || special.test(inputVal)){
+					form.getItem("name").clear();
+				}
+			});
+			
+			// ajax
 			send.events.on("click", function(){
 				const jsonData = JSON.stringify(form.getValue());
 				//alert(jsonData);
@@ -290,16 +308,13 @@
 					success:function(data){
 						location.replace("/" + data.id); // href와의 차이: 이전 페이지로 이동할 수 없다
 					}, error:function(data){
-						alert(JSON.stringify(data));
-						alert(data.responseText);
-						alert(JSON.parse(data.responseText).code);
 						switch (data.status){
 							case 400:
-								//alert('파라미터 오류');
-								var msg = "";
-								msg += "에러코드: " + JSON.parse(data.responseText).code + "\n"
-										+ "관련항목: " + JSON.parse(data.responseText).fields.field + "\n"
-										+ "사유: " + JSON.parse(JSON.stringify(JSON.parse(data.responseText).fields)).reason;
+								var msg = "에러코드: " + JSON.parse(data.responseText).code + "\n";
+								for(i=0; i<JSON.parse(data.responseText).fields.length; i++){
+									msg += "관련항목: " + JSON.parse(data.responseText).fields[i].field + "\n"
+											+ "사유: " + JSON.parse(data.responseText).fields[i].reason;
+								}
 								alert(msg);
 								break;
 							case 500:

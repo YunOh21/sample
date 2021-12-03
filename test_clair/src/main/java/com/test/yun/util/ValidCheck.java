@@ -2,11 +2,14 @@ package com.test.yun.util;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.test.yun.dto.UserBean;
+import com.test.yun.dto.InvalidBean;
 
 @Service
 public class ValidCheck {
@@ -41,84 +44,100 @@ public class ValidCheck {
 	
 	/* UserBean 데이터 체크 */
 	// 데이터 확인
-	public boolean isValid(UserBean ub) {
-		if (isNull(ub)) {
-			System.out.println(ub.getId());
+	public ArrayList<InvalidBean> validCheck(UserBean userBean) {
+		ArrayList<InvalidBean> invalidList = new ArrayList<InvalidBean>();
+		if (nullCheck(userBean, invalidList).size()!=0) {
+			System.out.println(userBean.getId());
 			System.out.println("실패사유: null 있음");
-			return false;
+			return invalidList;
 		}
-		if (isSizeOver(ub)) {
-			System.out.println(ub.getId());
+		if (sizeCheck(userBean, invalidList).size()!=0) {
+			System.out.println(userBean.getId());
 			System.out.println("실패사유: 입력할 수 있는 범위를 초과하였습니다.");
-			return false;
+			return invalidList;
 		}
-		if (!isTimestamp(ub)) {
-			System.out.println(ub.getId());
+		if (timeCheck(userBean, invalidList).size()!=0) {
+			System.out.println(userBean.getId());
 			System.out.println("실패사유: 등록일자 형식이 맞지 않습니다.");
-			return false;
+			return invalidList;
 		}
-		return true;
+		return invalidList;
 	}
 
 	// NN 칼럼 null 체크
-	public boolean isNull(UserBean ub) {
-		if (ub.getId() == null || ub.getId().equals("")) {
-			System.out.println("id가 null");
-			return true;
+	public ArrayList<InvalidBean> nullCheck(UserBean userBean, ArrayList<InvalidBean> invalidList) {
+		InvalidBean validBean = new InvalidBean();
+		if (userBean.getId() == null || userBean.getId().equals("")) {
+			validBean.setInvalidField("ID");
+			validBean.setInvalidReason("ID가 입력되지 않았습니다.");
+			invalidList.add(validBean);
 		}
-		if (ub.getPwd() == null || ub.getPwd().equals("")) {
-			System.out.println("pwd가 null");
-			return true;
+		if (userBean.getPwd() == null || userBean.getPwd().equals("")) {
+			validBean.setInvalidField("PASSWORD");
+			validBean.setInvalidReason("비밀번호가 입력되지 않았습니다.");
+			invalidList.add(validBean);
 		}
-		if (ub.getName() == null || ub.getName().equals("")) {
-			System.out.println("name이 null");
-			return true;
+		if (userBean.getName() == null || userBean.getName().equals("")) {
+			validBean.setInvalidField("이름");
+			validBean.setInvalidReason("이름이 입력되지 않았습니다.");
+			invalidList.add(validBean);
 		}
-		if (ub.getLevel() == null || ub.getLevel().equals("")) {
-			System.out.println("level이 null");
-			return true;
+		if (userBean.getLevel() == null || userBean.getLevel().equals("")) {
+			validBean.setInvalidField("레벨");
+			validBean.setInvalidReason("레벨이 입력되지 않았습니다.");
+			invalidList.add(validBean);
 		}
-		if (ub.getRegDate() == null || ub.getRegDate().equals("")) {
-			System.out.println("등록일자 null");
-			return true;
+		if (userBean.getRegDate() == null || userBean.getRegDate().equals("")) {
+			validBean.setInvalidField("등록일자");
+			validBean.setInvalidReason("등록일자가 입력되지 않았습니다.");
+			invalidList.add(validBean);
 		}
-		return false;
+		return invalidList;
 	}
 
 	// 데이터 사이즈 초과 체크
-	public boolean isSizeOver(UserBean ub) {
-		if (ub.getId().length() > idLength) {
-			System.out.println("id 데이터 초과");
-			return true;
+	public ArrayList<InvalidBean> sizeCheck(UserBean userBean, ArrayList<InvalidBean> invalidList) {
+		InvalidBean validBean = new InvalidBean();
+		if (userBean.getId().length() > idLength) {
+			validBean.setInvalidField("ID");
+			validBean.setInvalidReason("ID가 너무 깁니다.");
+			invalidList.add(validBean);
 		}
-		if (ub.getPwd().length() > pwdLength) {
-			System.out.println("pwd 데이터 초과");
-			return true;
+		if (userBean.getPwd().length() > pwdLength) {
+			validBean.setInvalidField("PASSWORD");
+			validBean.setInvalidReason("비밀번호가 너무 깁니다.");
+			invalidList.add(validBean);
 		}
-		if (ub.getName().length() > nameLength) {
-			System.out.println("name 데이터 초과");
-			return true;
+		if (userBean.getName().length() > nameLength) {
+			validBean.setInvalidField("이름");
+			validBean.setInvalidReason("이름이 너무 깁니다.");
+			invalidList.add(validBean);
 		}
-		if (ub.getLevel().length() > levelLength) {
-			System.out.println("level 데이터 초과");
-			return true;
+		if (userBean.getLevel().length() > levelLength) {
+			validBean.setInvalidField("레벨");
+			validBean.setInvalidReason("레벨이 너무 깁니다.");
+			invalidList.add(validBean);
 		}
-		if (ub.getDesc().length() > descLength) {
-			System.out.println("desc 데이터 초과");
-			return true;
+		if (userBean.getDesc().length() > descLength) {
+			validBean.setInvalidField("특이사항");
+			validBean.setInvalidReason("특이사항이 너무 깁니다.");
+			invalidList.add(validBean);
 		}
-		return false;
+		return invalidList;
 	}
 
 	// 타임스탬프 형식 체크
-	public boolean isTimestamp(UserBean ub) {
+	public ArrayList<InvalidBean> timeCheck(UserBean userBean, ArrayList<InvalidBean> invalidList) {
+		InvalidBean validBean = new InvalidBean();
 		try {
 			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-			dateFormat.parse(ub.getRegDate());
+			dateFormat.parse(userBean.getRegDate());
 		} catch (ParseException e) {
-			return false;
+			validBean.setInvalidField("등록일자");
+			validBean.setInvalidReason("등록일자 형식을 확인해 주세요.");
+			invalidList.add(validBean);
 		}
-		return true;
+		return invalidList;
 	}
 
 }

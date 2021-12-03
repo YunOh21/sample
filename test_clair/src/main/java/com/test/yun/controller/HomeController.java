@@ -1,13 +1,11 @@
 package com.test.yun.controller;
 
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.json.simple.JSONArray;
@@ -16,12 +14,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -29,10 +23,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
-import org.w3c.dom.events.Event;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.test.yun.dto.UserBean;
+import com.test.yun.dto.InvalidBean;
 import com.test.yun.mapper.UserMapper;
 import com.test.yun.service.FileService;
 import com.test.yun.service.HomeService;
@@ -54,16 +48,16 @@ public class HomeController {
 	@Autowired
 	private FileService fileService;
 	
-	// 최초 접속
+	// 최초 접속 -- 로그인한 경우 유저 홈 화면으로 이동
 	@RequestMapping(value = "/", method = RequestMethod.GET)
-	public ModelAndView home() {
-		return homeService.home();
+	public String home(HttpSession session, RedirectAttributes ra) {
+		return homeService.home(session, ra);
 	}
 	
-	// 사용자 로그인폼
+	// 사용자 로그인폼 -- 로그인한 경우 유저 홈 화면으로 이동
 	@RequestMapping(value = "/user/signin", method = RequestMethod.GET)
-	public String login() {
-		return "login.html";
+	public String login(HttpSession session, RedirectAttributes ra) {
+		return homeService.login(session, ra);
 	}
 	
 	// 사용자 로그인 -- 세션 인증 처리 필요, 우측 상단에 로그인한 사용자 이름 + 로그아웃 버튼
@@ -72,8 +66,8 @@ public class HomeController {
 	public ResponseEntity<String> loginResult(@RequestBody UserBean userBean, HttpServletRequest req) {
 		ResponseEntity<String> result = ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
 		HttpSession session = req.getSession();
-		if(userMapper.loginUser(userBean).size()==1) {
-			if(homeService.checkPwd(userBean, userMapper.loginUser(userBean).get(0))){
+		if(userMapper.loginUser(userBean).size()==1) { // id 존재 확인
+			if(homeService.checkPwd(userBean, userMapper.loginUser(userBean).get(0))){ // pwd 일치 확인
 				session.setAttribute("id", userBean.getId());
 				session.setAttribute("name", userMapper.loginUser(userBean).get(0).getName());
 				Map<String, Object> joMap = new HashMap<String, Object>();
@@ -89,8 +83,8 @@ public class HomeController {
 	
 	// 사용자 가입폼
 	@RequestMapping(value = "/user/signup", method = RequestMethod.GET)
-	public String join() {
-		return "join.html";
+	public String join(HttpSession session, RedirectAttributes ra) {
+		return homeService.join(session, ra);
 	}
 	
 	// 사용자 가입 -- 1001: pk 중복 / 1002: data not valid
@@ -99,7 +93,8 @@ public class HomeController {
 	public ResponseEntity<String> joinResult(@RequestBody UserBean userBean) {
 		ResponseEntity<String> result;
 		//userBean.setRegDate(userBean.getRegDate() + " 00:00:00"); //날짜형식 잘못 테스트 시 주석처리
-		if(validCheck.isValid(userBean)) {
+		ArrayList<InvalidBean> invalidList = validCheck.validCheck(userBean);
+		if(invalidList.size()==0) {
 			if(fileService.insertUser(userBean)) {
 				JSONObject jo = new JSONObject();
 				jo.put("uri", "/");
@@ -122,9 +117,11 @@ public class HomeController {
 			JSONObject parent = new JSONObject();
 			JSONArray children = new JSONArray();
 			JSONObject child = new JSONObject();
-			child.put("field", "잘못 입력된 파라미터");
-			child.put("reason", "null 또는 sizeOver 또는 날짜형식 잘못");
-			children.add(child);
+			for(int i=0; i<invalidList.size(); i++) {
+				child.put("field", invalidList.get(i).getInvalidField());
+				child.put("reason", invalidList.get(i).getInvalidReason());
+				children.add(child);
+			}
 			parent.put("code", 1002);
 			parent.put("message", "입력항목 오류");
 			parent.put("hasFieldsError", true);

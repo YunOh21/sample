@@ -87,7 +87,7 @@ public class FileService {
 					totalcount++;
 					if (validCheck.isValid(line, colnum)) {
 						UserBean ub = makeUserInfo(line);
-						if (validCheck.isValid(ub)) {
+						if (validCheck.validCheck(ub).size()==0) {
 							if(insertUser(ub)) {
 								success++;
 								// 만약 이번에 insert성공한 값만 표시하고 싶다고 하면 여기서 line을 저장해주면 될 것
