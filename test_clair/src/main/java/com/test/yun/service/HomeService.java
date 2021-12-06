@@ -1,9 +1,13 @@
 package com.test.yun.service;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Map.Entry;
 
 import javax.servlet.http.HttpSession;
 
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -47,7 +51,7 @@ public class HomeService {
 	// 로그인 성공
 	public ModelAndView login(HttpSession session) {
 		ModelAndView mav = new ModelAndView();
-		mav.addObject("success", session.getAttribute("name")+"님");
+		mav.addObject("success", "["+session.getAttribute("name")+" 님]&nbsp;");
 		mav.setViewName("home.jsp");
 		return mav;
 	}
@@ -105,15 +109,23 @@ public class HomeService {
 	// dbfile 데이터 입력 일부 또는 모두 실패
 	private ModelAndView insertFail(FileBean fb) {
 		ModelAndView mav = new ModelAndView();
+		// json 객체 생성
+		JSONArray ja = new JSONArray();
 
 		// HashMap에서 key/value 추출
-		String cause = "";
+		//String cause = "";
 		for (Entry<Integer, String> entry : fb.getFdata().entrySet()) {
-			cause += entry.getKey() + "번 라인: " + entry.getValue() + "\r\n";
+			Map<String, Object> joMap = new HashMap<String, Object>();
+			// cause += entry.getKey() + "번 라인: " + entry.getValue() + "\r\n";
+			joMap.put("lineNum", entry.getKey());
+			joMap.put("lineText", entry.getValue().split("->")[0]);
+			joMap.put("failReason", entry.getValue().split("->")[1]);
+			JSONObject jo = new JSONObject(joMap);
+			ja.add(jo);
 		}
 		mav.addObject("success", fb.getSuccess());
 		mav.addObject("fail", fb.getTotal() - fb.getSuccess());
-		mav.addObject("cause", cause.replace("\r\n", "<br>"));
+		mav.addObject("failData", ja);
 		mav.setViewName("fail.jsp");
 		return mav;
 	}

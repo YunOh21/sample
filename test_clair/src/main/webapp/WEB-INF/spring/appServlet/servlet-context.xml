@@ -34,9 +34,17 @@
 		<beans:property name="suffix" value="" />
 	</beans:bean>
 	
+	<!-- Thymeleaf 뷰 리졸버 : 보류 -->
+<!-- 	<beans:bean id="templateResolver" class="org.thymeleaf.templateresolver.ServletContextTemplateResolver">
+    <beans:property name="prefix" value="/WEB-INF/views/" />
+    <beans:property name="suffix" value="" />
+    <beans:property name="templateMode" value="HTML5" />
+	</beans:bean> -->
+	
 	<!-- src/main/resources 이하 경로에 위치한 properties 파일: 데이터 범위 지정 -->
 	<context:property-placeholder location="classpath:config/config.properties"/>
 	
+	<!-- 패키지 -->
 	<context:component-scan base-package="com.test.yun" />
 	
 </beans:beans>

@@ -3,76 +3,88 @@
 <html>
 <head>
 	<title>업로드 성공</title>
+	<meta name="description" content="">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" charset="utf-8">
+	<link rel="shortcut icon" href="/common/favicon/favicon.ico" type="image/x-icon" />
+	<link rel="icon" href="/common/favicon/icon-16.png" sizes="16x16" />
+	<link rel="icon" href="/common/favicon/icon-32.png" sizes="32x32" />
+	<link rel="icon" href="/common/favicon/icon-48.png" sizes="48x48" />
+	<link rel="icon" href="/common/favicon/icon-96.png" sizes="96x96" />
+	<link rel="icon" href="/common/favicon/icon-144.png" sizes="144x144" />
+	<!-- end meta block -->
+	<script type="text/javascript" src="/codebase/suite.js?v=7.2.5"></script>
+	<link rel="stylesheet" href="/codebase/suite.css?v=7.2.5">
+	<link rel="stylesheet" href="/common/index.css?v=7.2.5">
 </head>
 <style>
-body {
-	text-align : center
-}
-table {
-	width: 75%;
-	margin: 10px auto;
-	border : 0.5px solid gray;
-	border-collapse: collapse;
-	text-align: center;
-	line-height: 1.5
-}
-td {
-	border : 0.5px solid gray
-}
-button {
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  appearance: none;
-  
-  background: #28a745;
-  color: #ffffff;
-  
-  margin: 0;
-  padding: 0.5rem 1rem;
-  
-  font-family: 'Noto Sans KR', sans-serif;
-  font-size: 1rem;
-  font-weight: 400;
-  text-align: center;
-  text-decoration: none;
-  
-  border: none;
-  border-radius: 4px;
-  
-  display: inline-block;
-  width: auto;
-  
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-  
-  cursor: pointer;
-  
-  transition: 0.5s;
-}
+    .flex-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+    }
+    #grid {
+    	width: 1200px;
+    	height: 446px;
+    }
+    #pagination {
+    	width: 300px;
+    }
 </style>
 <body>
-	<h3 style="display:inline">레코드건수 ${success}건 입력 성공</h3>
-	<button id="showResult">현재까지 레코드 조회</button>
-	<div id="resultDiv"></div>
+	<header class="dhx_sample-header">
+		<div class="dhx_sample-header__main">
+			<nav class="dhx_sample-header__breadcrumbs">
+				<ul class="dhx_sample-header-breadcrumbs">
+					<li class="dhx_sample-header-breadcrumbs__item">
+						<a href="/" class="dhx_sample-header-breadcrumbs__link">홈 화면으로</a>
+					</li>
+				</ul>
+			</nav>
+			<h1 class="dhx_sample-header__title">
+				<div class="dhx_sample-header__content">
+				레코드건수 ${success}건 입력 성공
+				</div>
+			</h1>
+			<nav class="dhx_sample-header__breadcrumbs">
+				<ul class="dhx_sample-header-breadcrumbs">
+					<li class="dhx_sample-header-breadcrumbs__item">
+						<a class="dhx_sample-header-breadcrumbs__link" id="showResult" style="cursor:pointer">현재까지 레코드 조회</a>
+					</li>
+				</ul>
+			</nav>
+		</div>
+	</header>
+	<section class="dhx_sample-container" style="height: 80%">
+		<div class="flex-container">
+			<div id="grid"></div><br>
+			<div id="pagination" style="padding: 0 20px;"></div>
+		</div>
+	</section>
 </body>
 <script src="https://code.jquery.com/jquery-latest.min.js"></script>
 <script>
 $('#showResult').click(function(){
-	
-	let data = {
-		  id: "string",
-		  password: "string"
-		};
-	
 	$.ajax({
 		url : '/file/success',
 		dataType : 'json',
 		success:function(data){
-			const str = "<table id='resultTable'>";
-			$('#resultDiv').append(str);
-			 $.each(data, function(index,value){
-				let record = "<tr><td>"+value['id']+"</td><td>"+value['pwd']+"</td><td>"+value['name']+"</td><td>"+value['level']+"</td><td>"+value['desc']+"</td><td>"+value['regDate']+"</td></tr>";
-				$('#resultTable').append(record);
-			})
+			const grid = new dhx.Grid("grid", {
+				columns: [
+					{ width: 200, id: "id", header: [{ text: "ID" }] },
+					{ width: 200, id: "pwd", header: [{ text: "패스워드" }] },
+					{ width: 150, id: "name", header: [{ text: "이름" }] },
+					{ width: 100, id: "level", header: [{ text: "등급" }] },
+					{ width: 295, id: "desc", header: [{ text: "특이사항" }] },
+					{ width: 252, id: "regDate", header: [{ text: "등록일자" }] },
+				],
+				data: data
+			});
+			const pagination = new dhx.Pagination("pagination", {
+			    css: "dhx_widget--bordered dhx_widget--no-border_top",
+			    data: grid.data,
+			    pageSize: 10
+			});
 		}, error:function(){
 			alert("서버연결에 실패하였습니다.");
 		}

@@ -69,9 +69,9 @@ public class HomeController {
 	@ResponseBody
 	public ResponseEntity<String> login(@RequestBody UserBean userBean, HttpServletRequest req) {
 		ResponseEntity<String> result = ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-		HttpSession session = req.getSession();
 		if (userMapper.loginUser(userBean).size() == 1) { // id 존재 확인
 			if (homeService.checkPwd(userBean, userMapper.loginUser(userBean).get(0))) { // pwd 일치 확인
+				HttpSession session = req.getSession();
 				session.setAttribute("id", userBean.getId());
 				session.setAttribute("name", userMapper.loginUser(userBean).get(0).getName());
 				Map<String, Object> joMap = new HashMap<String, Object>();
@@ -91,10 +91,10 @@ public class HomeController {
 		return homeService.join(session, ra);
 	}
 
-	// 사용자 가입 -- 1001: pk 중복 / 1002: data not valid
+	// 사용자 가입 -- 1001: pk 중복 / 1002: data not valid -- 가입 후 자동 로그인 처리
 	@RequestMapping(value = "/user/signup", method = RequestMethod.POST, produces = "application/text; charset=utf8")
 	@ResponseBody
-	public ResponseEntity<String> join(@Valid @RequestBody UserBean userBean) {
+	public ResponseEntity<String> join(@Valid @RequestBody UserBean userBean, HttpServletRequest req) {
 		ResponseEntity<String> result;
 		/* null 테스트 */
 //		userBean.setId("");
@@ -105,6 +105,9 @@ public class HomeController {
 		HashMap<String, String> invalidJoinMap = joinValidCheck.validCheck(userBean);
 		if (invalidJoinMap.size() == 0) {
 			if (fileService.insertUser(userBean)) {
+				HttpSession session = req.getSession();
+				session.setAttribute("id", userBean.getId());
+				session.setAttribute("name", userBean.getName());
 				JSONObject jo = new JSONObject();
 				jo.put("uri", "/");
 				jo.put("id", userBean.getId());
@@ -187,14 +190,13 @@ public class HomeController {
 		JSONArray ja = new JSONArray();
 		for (int i = 0; i < user.size(); i++) {
 			// jsonObject 생성 시 type warning 우회
-			Map<String, Object> joMap = new HashMap<String, Object>();
-			joMap.put("id", user.get(i).getId());
-			joMap.put("pwd", user.get(i).getPwd());
-			joMap.put("name", user.get(i).getName());
-			joMap.put("level", user.get(i).getLevel());
-			joMap.put("desc", user.get(i).getDesc());
-			joMap.put("regDate", user.get(i).getRegDate());
-			JSONObject jo = new JSONObject(joMap);
+			JSONObject jo = new JSONObject();
+			jo.put("id", user.get(i).getId());
+			jo.put("pwd", user.get(i).getPwd());
+			jo.put("name", user.get(i).getName());
+			jo.put("level", user.get(i).getLevel());
+			jo.put("desc", user.get(i).getDesc());
+			jo.put("regDate", user.get(i).getRegDate());
 			// jsonArray에 1줄씩 추가
 			ja.add(jo);
 		}

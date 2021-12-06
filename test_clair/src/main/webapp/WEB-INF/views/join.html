@@ -71,12 +71,14 @@
 							const regex = /^(?=.*\d)(?=.*[a-z]).{4,}$/gm;
 							return regex.test(value);
 						},
+						preMessage: "ID는 영문/숫자 조합으로 4자리 이상, 16자리 이하여야 합니다.",
 						errorMessage: "ID는 영문/숫자 조합으로 4자리 이상, 16자리 이하여야 합니다.",
 						name: "id",
 						minlength: "4",
 						maxlength: "16",
 						required: "true",
-						labelPosition: "left"
+						labelPosition: "left",
+						id: "userId"
 					},
 					{
 						type: "input",
@@ -88,12 +90,14 @@
 							// const regex = /^(?=.*\d)(?=.*[a-zA-Z])(?=.*[\W]).{8,}$/gm; -- 4가지 모두를 충족하는 경우
 							return regex.test(value);
 						},
-						errorMessage: "암호는 영문 대소문자/숫자/특수문자 중 3가지 이상 포함하여 8자리 이상, 16자리 이하여야 합니다.",
+						preMessage: "암호는 영문 대소문자/숫자/특수문자 중 3가지 이상 포함하여 8자리 이상, 16자리 이하여야 합니다.",
+						erroMessage: "암호는 영문 대소문자/숫자/특수문자 중 3가지 이상 포함하여 8자리 이상, 16자리 이하여야 합니다.",
 						name: "pwd",
 						minlength: "8",
 						maxlength: "16",
 						required: "true",
-						labelPosition: "left"
+						labelPosition: "left",
+						id: "userPwd"
 					},
 					{
 						type: "input",
@@ -101,17 +105,18 @@
 						value: "",
 						labelWidth: "100px",
 						validation: function(value) {
-							return value != "";
+							return value.length > 0;
 						},
 						errorMessage: "이름이 입력되지 않았거나 너무 깁니다.",
 						name: "name",
 						maxlength: "128",
 						required: "true",
-						labelPosition: "left"
+						labelPosition: "left",
+						id: "userName"
 					},
 					{
 						type: "select",
-						label: "레벨",
+						label: "등급",
 						labelWidth: "100px",
 						name: "level",
 			            width:"300px",
@@ -136,11 +141,14 @@
 			                    value: "D",
 			                    content: "D"
 			                }
-			            ],
-			            validation: function(value) {
-							return value != "";
+			            ]
+						,
+						validation: function(value) {
+							return value.length > 0;
 						},
-						errorMessage: "레벨이 선택되지 않았습니다.",
+						preMessage: "등급을 선택해 주세요.",
+						errorMessage: "등급이 선택되지 않았습니다.",
+						id: "userLevel",
 						required: "true",
 						labelPosition: "left"
 					},
@@ -165,16 +173,17 @@
 						dateFormat: "%Y-%m-%d",
 						width: "300px",
 						labelPosition: "left",
-						value: "",
 						disabledDates: function(date){
 							let max = new Date();
 							return date > max
 						},
-						validation: function(value){ // send 클릭 시에만 작동함
-							return value != "";
+						validation: function(value){
+							const regexDate = /^\d{4}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])$/
+							return regexDate.test(form.getItem("regDate").getValue());
 						},
-						required: true,
-						errorMessage: "등록일자가 선택되지 않았습니다."
+						errorMessage: "등록일자가 선택되지 않았습니다.",
+						preMessage: "등록일자를 선택해 주세요.",
+						required: true
 					},
 					{
 						type: "button",
@@ -199,23 +208,41 @@
 			$(document).ready(function(){
 				const regexId = /^(?=.*\d)(?=.*[a-z]).{4,}$/gm;
 				const regexPwd = /(?=.{8,})((?=.*\d)(?=.*[a-z])(?=.*[A-Z])|(?=.*\d)(?=.*[a-zA-Z])(?=.*[\W_])|(?=.*[a-z])(?=.*[A-Z])(?=.*[\W_])).*/;
-				
+				const regexDate = /^\d{4}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])$/
 				$("input").on("input", (function(){
-					//console.log("onInput");
-					regexId.test(form.getItem("id").getValue())==true && regexPwd.test(form.getItem("pwd").getValue())==true && form.getItem("name").getValue()!=""
-					&& form.getItem("level").getValue()!="" && form.getItem("regDate").getValue()!=""? send.enable() : send.disable();
+					console.log("-----------------oninput--------------")
+					console.log(regexId.test($("#userId").val()));
+					console.log(regexPwd.test($("#userPwd").val()));
+					console.log(form.getItem("level").getValue().length);
+					console.log(form.getItem("name").getValue().length);
+					console.log(regexDate.test(form.getItem("regDate").getValue()));
+					console.log("-----------------oninput END--------------")
+					regexId.test($("#userId").val())==true && regexPwd.test($("#userPwd").val())==true && form.getItem("name").getValue().length>0
+					&& form.getItem("level").getValue().length>0 && regexDate.test(form.getItem("regDate").getValue())==true? send.enable() : send.disable();
 				}));
 				
 				$("select").on("change", (function(){
-					//console.log("level selected");
-					regexId.test(form.getItem("id").getValue())==true && regexPwd.test(form.getItem("pwd").getValue())==true && form.getItem("name").getValue()!=""
-					&& form.getItem("level").getValue()!="" && form.getItem("regDate").getValue()!=""? send.enable() : send.disable();
+					console.log("-----------------onselect--------------")
+					console.log(regexId.test($("#userId").val()));
+					console.log(regexPwd.test($("#userPwd").val()));
+					console.log(form.getItem("level").getValue().length);
+					console.log(form.getItem("name").getValue().length);
+					console.log(regexDate.test(form.getItem("regDate").getValue()));
+					console.log("-----------------onselect END--------------")
+					regexId.test($("#userId").val())==true && regexPwd.test($("#userPwd").val())==true && form.getItem("name").getValue().length>0
+						&& form.getItem("level").getValue().length>0 && regexDate.test(form.getItem("regDate").getValue())==true? send.enable() : send.disable();
 				}));
 				
 				form.getItem("regDate").events.on("change", function(){
-					//console.log("date changed");
-					regexId.test(form.getItem("id").getValue())==true && regexPwd.test(form.getItem("pwd").getValue())==true && form.getItem("name").getValue()!=""
-					&& form.getItem("level").getValue()!="" && form.getItem("regDate").getValue()!=""? send.enable() : send.disable();
+					console.log("-----------------date change--------------")
+					console.log(regexId.test($("#userId").val()));
+					console.log(regexPwd.test($("#userPwd").val()));
+					console.log(form.getItem("level").getValue().length);
+					console.log(form.getItem("name").getValue().length);
+					console.log(regexDate.test(form.getItem("regDate").getValue()));
+					console.log("-----------------date change END--------------")
+					regexId.test($("#userId").val())==true && regexPwd.test($("#userPwd").val())==true && form.getItem("name").getValue().length>0
+						&& form.getItem("level").getValue().length>0 && regexDate.test(form.getItem("regDate").getValue())==true? send.enable() : send.disable();
 				});
 				
 				// forEach로 array에 담는 경우
@@ -274,6 +301,7 @@
 				const inputVal = form.getItem("id").getValue();
 				const hangeul = /[ㄱ-ㅎ|ㅏ-ㅣ|가-힣]/;
 				if(hangeul.test(inputVal)){
+					alert("ID에 한글은 입력 불가합니다.");
 					form.getItem("id").clear();
 				}
 			});
@@ -281,6 +309,7 @@
 				const inputVal = form.getItem("pwd").getValue();
 				const hangeul = /[ㄱ-ㅎ|ㅏ-ㅣ|가-힣]/;
 				if(hangeul.test(inputVal)){
+					alert("패스워드에 한글은 입력 불가합니다.");
 					form.getItem("pwd").clear();
 				}
 			});
@@ -291,6 +320,7 @@
 				const num = /\d/;
 				const special = /[\{\}\[\]\/?.,;:|\)*~`!^\-_+┼<>@\#$%&\'\"\\\(\=]/gi;
 				if(num.test(inputVal) || special.test(inputVal)){
+					alert("이름에 숫자 및 특수문자 입력 불가합니다.");
 					form.getItem("name").clear();
 				}
 			});
@@ -304,10 +334,11 @@
 					url: '/user/signup',
 					contentType: 'application/json', // 서버로 전송하는 데이터 형식
 					data: jsonData, // 전송하는 데이터
-					dataType: "application/json;charset=utf-8", // 서버에서 반환하는 데이터 형식
+					// dataType: "application/json;charset=utf-8", // 서버에서 반환하는 데이터 형식 -- parseError 발생하여 삭제
 					success:function(data){
-						location.replace("/" + data.id); // href와의 차이: 이전 페이지로 이동할 수 없다
+						location.replace("/" + JSON.parse(data).id); // href와의 차이: 이전 페이지로 이동할 수 없다
 					}, error:function(data){
+						alert(JSON.stringify(data));
 						switch (data.status){
 							case 400:
 								var msg = "[에러코드: " + JSON.parse(data.responseText).code + "]\n";

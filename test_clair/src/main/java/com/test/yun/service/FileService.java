@@ -93,14 +93,14 @@ public class FileService {
 								// 만약 이번에 insert성공한 값만 표시하고 싶다고 하면 여기서 line을 저장해주면 될 것
 							} else {
 								// pk 중복 시 insert 실패
-								fdata.put(totalcount, line + " -> 사유: 이미 존재하는 ID입니다.");
+								fdata.put(totalcount, line + " -> 이미 존재하는 ID입니다.");
 							}
 						} else {
 							System.out.println(line);
-							fdata.put(totalcount, line + " -> 사유: 필수값이 비어있거나, 입력할 수 있는 범위를 초과하였습니다.");
+							fdata.put(totalcount, line + " -> 필수값이 비어있거나, 입력할 수 있는 범위를 초과하였습니다.");
 						}
 					} else {
-						fdata.put(totalcount, line + " -> 사유: 필수값이 없습니다.");
+						fdata.put(totalcount, line + " -> 필수값이 없습니다.");
 					}
 				}
 				fb.setMsg("readOK");

@@ -3,6 +3,18 @@
 <html>
 <head>
 	<title>파일 업로드</title>
+	<meta name="description" content="">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" charset="utf-8">
+	<link rel="shortcut icon" href="/common/favicon/favicon.ico" type="image/x-icon" />
+	<link rel="icon" href="/common/favicon/icon-16.png" sizes="16x16" />
+	<link rel="icon" href="/common/favicon/icon-32.png" sizes="32x32" />
+	<link rel="icon" href="/common/favicon/icon-48.png" sizes="48x48" />
+	<link rel="icon" href="/common/favicon/icon-96.png" sizes="96x96" />
+	<link rel="icon" href="/common/favicon/icon-144.png" sizes="144x144" />
+	<!-- end meta block -->
+	<script type="text/javascript" src="/codebase/suite.js?v=7.2.5"></script>
+	<link rel="stylesheet" href="/codebase/suite.css?v=7.2.5">
+	<link rel="stylesheet" href="/common/index.css?v=7.2.5">
 </head>
 <style>
 .btn {
@@ -10,7 +22,7 @@
   -moz-appearance: none;
   appearance: none;
   
-  background: #28a745;
+  background: #0288d1;
   color: #ffffff;
   
   margin: 0;
@@ -44,29 +56,50 @@
   border: 1px solid #ebebeb;
   border-radius: 5px;
 }
+
+#btn {
+	float: right;
+}
 </style>
-<body style="text-align: center">
+<body>
+		<header class="dhx_sample-header">
+			<div class="dhx_sample-header__main">
+				<nav class="dhx_sample-header__breadcrumbs">
+					<ul class="dhx_sample-header-breadcrumbs">
+						<li class="dhx_sample-header-breadcrumbs__item">
+						</li>
+					</ul>
+				</nav>
+				<h1 class="dhx_sample-header__title">
+					<div class="dhx_sample-header__content">
+						홈페이지
+					</div>
+				</h1>
+				<nav class="dhx_sample-header__breadcrumbs">
+					<ul class="dhx_sample-header-breadcrumbs">
+						<li class="dhx_sample-header-breadcrumbs__item">
+							<a class="dhx_sample-header-breadcrumbs__link"><span id="user">${success}</span></a>
+							<a href="/user/signin" class="dhx_sample-header-breadcrumbs__link" id="login" onclick="login()">로그인</a>
+							<a href="/logout" class="dhx_sample-header-breadcrumbs__link" id="logout" onclick="logout()" style="display:none">로그아웃</a>
+						</li>
+					</ul>
+				</nav>
+			</div>
+		</header>
 	${uploadFail}
-	<div style="float:right; padding:20px;">
-		<span type="text" id="user" style="display:none">${success }</span>
-		<button class="btn" id="logout" onclick="logout()" style="display:none">로그아웃</button>
-		<button class="btn" id="login" onclick="login()" style="display:none">로그인</button>
-	</div>
-	<div style="padding:100px">
-		<h1>업로드할 파일을 선택하세요.</h1>
-		<h3>※ dbfile 확장자만 업로드 가능합니다.</h3>
-		<form id="fileupload" action="/file/upload" method="POST" enctype="multipart/form-data">
+		<section class="dhx_sample-container">
+			<div id="form" style="height: 100%; margin: 20px;"></div>
+			<form id="fileupload" action="/file/upload" method="POST" enctype="multipart/form-data">
 			<label for="file" class="btn">파일 선택</label>
-			<input type="file" accept=".dbfile" id="file" name="userFile" style="display:none" onchange="showFileName()">
+			<input type="file" accept=".dbfile" id="file" name="userFile" style="display:none">
 			<input class="upload-name">
 			<button class="btn" id="do">업로드</button>
 		</form>
-	</div>
-</body>
-<script src="https://code.jquery.com/jquery-latest.min.js"></script>
+		</section>
+		<script src="https://code.jquery.com/jquery-latest.js"></script>
 <script>
 // 파일명 표시
-$(document).ready(function(){ 
+$(document).ready(function(){
 	 var fileTarget = $('#file'); 
 	 fileTarget.on('change', function(){
 	     var cur=$("#file").val().replace(/C:\\fakepath\\/i,'');
@@ -89,10 +122,17 @@ $(document).ready(function(){
 	 if(msg!=null && msg!=""){
 		 alert(msg);
 	 }
-	 
 }); 
-// submit
-var send = document.getElementById("do");
+// 로그아웃
+function logout(){
+	location.replace("/logout");
+}
+//로그인
+function login(){
+	location.replace("/user/signin");
+}
+// 첨부된 파일이 있을 때 전송버튼 활성화
+const send = document.getElementById("do");
 send.addEventListener("click", function () {
  	var form = document.getElementById("fileupload");
  	var fileName = $("#file").val();
@@ -109,13 +149,6 @@ send.addEventListener("click", function () {
  		form.submit();
  	}
 });
-// 로그아웃
-function logout(){
-	location.replace("/logout");
-}
-//로그인
-function login(){
-	location.replace("/user/signin");
-}
 </script>
+</body>
 </html>
