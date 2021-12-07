@@ -24,10 +24,15 @@ public class HomeService {
 	@Autowired
 	private FileService fileService;
 
-	// 홈화면
-	public String home(HttpSession session, RedirectAttributes ra) {
-		String id = (String)session.getAttribute("id");
-		return id==null? "home.jsp" : redirectHome(id, ra);
+	// 홈화면 = 파일전송 화면
+	public ModelAndView fileupload(HttpSession session) {
+		ModelAndView mav = new ModelAndView();
+		if(session.getAttribute("id")!=null) {
+			mav.addObject("success", "["+session.getAttribute("name")+" 님]&nbsp;");
+			mav.addObject("userId", session.getAttribute("id"));
+		}
+		mav.setViewName("fileupload.jsp");
+		return mav;
 	}
 	
 	// 로그인폼
@@ -48,11 +53,11 @@ public class HomeService {
 		return "redirect:/" + id;
 	}
 	
-	// 로그인 성공
+	// 로그인,회원가입 성공
 	public ModelAndView login(HttpSession session) {
 		ModelAndView mav = new ModelAndView();
 		mav.addObject("success", "["+session.getAttribute("name")+" 님]&nbsp;");
-		mav.setViewName("home.jsp");
+		mav.setViewName("user.jsp");
 		return mav;
 	}
 	

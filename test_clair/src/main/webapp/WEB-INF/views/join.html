@@ -68,7 +68,7 @@
 						labelWidth: "100px",
 						value: "",
 						validation: function(value) {
-							const regex = /^(?=.*\d)(?=.*[a-z]).{4,}$/gm;
+							const regex = /^(?=.*\d)(?=.*[a-z]).{4,16}$/;
 							return regex.test(value);
 						},
 						preMessage: "ID는 영문/숫자 조합으로 4자리 이상, 16자리 이하여야 합니다.",
@@ -202,47 +202,60 @@
 			
 			const send = form.getItem("send");
 			
-			// SEND 버튼 입력 값 확인 후 활성화
-			// ISSUE: dhtmlx의 afterValidate나 events.on("input")는 화면의 다른 부분 클릭해야 동작
-			// 현재 send 버튼은 정상 동작하나, validate는 커서 이동 후에 동작하므로 validation 없이 errorMessage 구현을 send 버튼과 동시 동작하도록 수정 필요
+			// 입력 값 확인 후 SEND 버튼 활성화
 			$(document).ready(function(){
-				const regexId = /^(?=.*\d)(?=.*[a-z]).{4,}$/gm;
+				const regexId = /^(?=.*\d)(?=.*[a-z]).{4,16}$/;
 				const regexPwd = /(?=.{8,})((?=.*\d)(?=.*[a-z])(?=.*[A-Z])|(?=.*\d)(?=.*[a-zA-Z])(?=.*[\W_])|(?=.*[a-z])(?=.*[A-Z])(?=.*[\W_])).*/;
 				const regexDate = /^\d{4}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])$/
+				
+				var val1,val2,val3,val4,val5;
+				
 				$("input").on("input", (function(){
-					console.log("-----------------oninput--------------")
-					console.log(regexId.test($("#userId").val()));
-					console.log(regexPwd.test($("#userPwd").val()));
-					console.log(form.getItem("level").getValue().length);
-					console.log(form.getItem("name").getValue().length);
-					console.log(regexDate.test(form.getItem("regDate").getValue()));
-					console.log("-----------------oninput END--------------")
-					regexId.test($("#userId").val())==true && regexPwd.test($("#userPwd").val())==true && form.getItem("name").getValue().length>0
-					&& form.getItem("level").getValue().length>0 && regexDate.test(form.getItem("regDate").getValue())==true? send.enable() : send.disable();
+					val1 = regexId.test($("#userId").val());
+					val2 = regexPwd.test($("#userPwd").val());
+					val3 = form.getItem("name").getValue().length;
+					val4 = form.getItem("level").getValue().length;
+					val5 = regexDate.test(form.getItem("regDate").getValue())
+					console.log("--------------");
+					console.log(val1);
+					console.log(val2);
+					console.log(val3);
+					console.log(val4);
+					console.log(val5);
+					console.log("--------------");
+					val1 && val2 && val3 > 0 && val4 > 0 && val5? send.enable() : send.disable();
 				}));
 				
 				$("select").on("change", (function(){
-					console.log("-----------------onselect--------------")
-					console.log(regexId.test($("#userId").val()));
-					console.log(regexPwd.test($("#userPwd").val()));
-					console.log(form.getItem("level").getValue().length);
-					console.log(form.getItem("name").getValue().length);
-					console.log(regexDate.test(form.getItem("regDate").getValue()));
-					console.log("-----------------onselect END--------------")
-					regexId.test($("#userId").val())==true && regexPwd.test($("#userPwd").val())==true && form.getItem("name").getValue().length>0
-						&& form.getItem("level").getValue().length>0 && regexDate.test(form.getItem("regDate").getValue())==true? send.enable() : send.disable();
+					val1 = regexId.test($("#userId").val());
+					val2 = regexPwd.test($("#userPwd").val());
+					val3 = form.getItem("name").getValue().length;
+					val4 = form.getItem("level").getValue().length;
+					val5 = regexDate.test(form.getItem("regDate").getValue());
+					console.log("--------------");
+					console.log(val1);
+					console.log(val2);
+					console.log(val3);
+					console.log(val4);
+					console.log(val5);
+					console.log("--------------");
+					val1 && val2 && val3 > 0 && val4 > 0 && val5? send.enable() : send.disable();
 				}));
 				
 				form.getItem("regDate").events.on("change", function(){
-					console.log("-----------------date change--------------")
-					console.log(regexId.test($("#userId").val()));
-					console.log(regexPwd.test($("#userPwd").val()));
-					console.log(form.getItem("level").getValue().length);
-					console.log(form.getItem("name").getValue().length);
-					console.log(regexDate.test(form.getItem("regDate").getValue()));
-					console.log("-----------------date change END--------------")
-					regexId.test($("#userId").val())==true && regexPwd.test($("#userPwd").val())==true && form.getItem("name").getValue().length>0
-						&& form.getItem("level").getValue().length>0 && regexDate.test(form.getItem("regDate").getValue())==true? send.enable() : send.disable();
+					val1 = regexId.test($("#userId").val());
+					val2 = regexPwd.test($("#userPwd").val());
+					val3 = form.getItem("name").getValue().length;
+					val4 = form.getItem("level").getValue().length;
+					val5 = regexDate.test(form.getItem("regDate").getValue());
+					console.log("--------------");
+					console.log(val1);
+					console.log(val2);
+					console.log(val3);
+					console.log(val4);
+					console.log(val5);
+					console.log("--------------");
+					val1 && val2 && val3 > 0 && val4 > 0 && val5? send.enable() : send.disable();
 				});
 				
 				// forEach로 array에 담는 경우
@@ -296,21 +309,30 @@
 // 				&& form.getItem("level").getValue()!="" && form.getItem("regDate").getValue()!=""? send.enable() : send.disable();
 // 			});
 			
-			// ID,PASSWORD에 한글입력 불가
+			// ID에 한글입력 불가
 			form.getItem("id").events.on("input", function(){
 				const inputVal = form.getItem("id").getValue();
 				const hangeul = /[ㄱ-ㅎ|ㅏ-ㅣ|가-힣]/;
+				const special = /[\{\}\[\]\/?.,;:|\)*~`!^\-_+┼<>@\#$%&\'\"\\\(\=]/gi;
 				if(hangeul.test(inputVal)){
-					alert("ID에 한글은 입력 불가합니다.");
-					form.getItem("id").clear();
+					form.getItem("id").setValue("");
+					form.getItem("id").setProperties({errorMessage:"ID에 한글은 입력 불가합니다."});
+				}else if(special.test(inputVal)){
+					form.getItem("id").setValue("");
+					form.getItem("id").setProperties({errorMessage:"ID에 특수문자는 입력 불가합니다."});
+				}else if(!hangeul.test(inputVal)&&!special.test(inputVal)){
+					form.getItem("id").setProperties({errorMessage:"ID는 영문/숫자 조합으로 4자리 이상, 16자리 이하여야 합니다."});
 				}
 			});
+			
+			// 패스워드에 한글입력 불가
+			// ISSUE: 패스워드 입력 시 한글로 입력해도 영문으로 인식되어 현재 동작 안 함
 			form.getItem("pwd").events.on("input", function(){
 				const inputVal = form.getItem("pwd").getValue();
 				const hangeul = /[ㄱ-ㅎ|ㅏ-ㅣ|가-힣]/;
 				if(hangeul.test(inputVal)){
-					alert("패스워드에 한글은 입력 불가합니다.");
-					form.getItem("pwd").clear();
+					form.getItem("pwd").setValue("");
+					form.getItem("pwd").setProperties({errorMessage:"패스워드에 한글은 입력 불가합니다."});
 				}
 			});
 			
@@ -319,9 +341,20 @@
 				const inputVal = form.getItem("name").getValue();
 				const num = /\d/;
 				const special = /[\{\}\[\]\/?.,;:|\)*~`!^\-_+┼<>@\#$%&\'\"\\\(\=]/gi;
-				if(num.test(inputVal) || special.test(inputVal)){
-					alert("이름에 숫자 및 특수문자 입력 불가합니다.");
-					form.getItem("name").clear();
+				if(num.test(inputVal)){
+					form.getItem("name").setValue("");
+					form.getItem("name").setProperties({errorMessage:"이름에 숫자는 입력 불가합니다."});
+				}
+				if(special.test(inputVal)){
+					form.getItem("name").setValue("");
+					form.getItem("name").setProperties({errorMessage:"이름에 특수문자는 입력 불가합니다."});
+				}
+			});
+			// 이름 입력 없이 다른 칸 이동 시 에러문구 -- 단, properties는 설정되었음에도 errorMessage 표시 안됨
+			form.getItem("name").events.on("blur", function(){
+				//console.log(form.getItem("name").getValue().length);
+				if(form.getItem("name").getValue().length==0){
+					form.getItem("name").setProperties({errorMessage:"이름이 입력되지 않았습니다."});
 				}
 			});
 			

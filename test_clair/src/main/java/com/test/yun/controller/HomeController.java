@@ -52,10 +52,10 @@ public class HomeController {
 	@Autowired
 	private FileService fileService;
 
-	// 최초 접속 -- 로그인한 경우 유저 홈 화면으로 이동
+	// 최초 접속 -- 파일 전송 화면
 	@RequestMapping(value = "/", method = RequestMethod.GET)
-	public String home(HttpSession session, RedirectAttributes ra) {
-		return homeService.home(session, ra);
+	public ModelAndView fileupload(HttpSession session) {
+		return homeService.fileupload(session);
 	}
 
 	// 사용자 로그인폼 -- 로그인한 경우 유저 홈 화면으로 이동

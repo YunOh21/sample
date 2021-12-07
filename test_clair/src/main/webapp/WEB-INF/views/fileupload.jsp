@@ -1,8 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ page session="false" %>
 <html>
 <head>
-	<title>파일 업로드</title>
+	<title>파일전송</title>
 	<meta name="description" content="">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0" charset="utf-8">
 	<link rel="shortcut icon" href="/common/favicon/favicon.ico" type="image/x-icon" />
@@ -72,13 +71,13 @@
 				</nav>
 				<h1 class="dhx_sample-header__title">
 					<div class="dhx_sample-header__content">
-						홈페이지
+						파일전송
 					</div>
 				</h1>
 				<nav class="dhx_sample-header__breadcrumbs">
 					<ul class="dhx_sample-header-breadcrumbs">
 						<li class="dhx_sample-header-breadcrumbs__item">
-							<a class="dhx_sample-header-breadcrumbs__link"><span id="user">${success}</span></a>
+							<a class="dhx_sample-header-breadcrumbs__link" style="cursor:pointer" id="user" onclick="user()">${success}</a>
 							<a href="/user/signin" class="dhx_sample-header-breadcrumbs__link" id="login" onclick="login()">로그인</a>
 							<a href="/logout" class="dhx_sample-header-breadcrumbs__link" id="logout" onclick="logout()" style="display:none">로그아웃</a>
 						</li>
@@ -130,6 +129,10 @@ function logout(){
 //로그인
 function login(){
 	location.replace("/user/signin");
+}
+//사용자 페이지 = 전체 유저 조회
+function user(){
+	location.replace("/" + ${userId});
 }
 // 첨부된 파일이 있을 때 전송버튼 활성화
 const send = document.getElementById("do");
