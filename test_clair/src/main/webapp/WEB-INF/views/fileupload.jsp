@@ -132,7 +132,7 @@ function login(){
 }
 //사용자 페이지 = 전체 유저 조회
 function user(){
-	location.replace("/" + ${userId});
+	location.replace("/${userId}");
 }
 // 첨부된 파일이 있을 때 전송버튼 활성화
 const send = document.getElementById("do");

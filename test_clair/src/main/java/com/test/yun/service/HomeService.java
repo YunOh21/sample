@@ -57,6 +57,10 @@ public class HomeService {
 	public ModelAndView login(HttpSession session) {
 		ModelAndView mav = new ModelAndView();
 		mav.addObject("success", "["+session.getAttribute("name")+" 님]&nbsp;");
+		if(session.getAttribute("join")!=null) {
+			mav.addObject("join", "회원가입이 완료되었습니다!");
+			session.setAttribute("join", null); // 회원가입 후 첫 화면에만 welcome 이미지 표시
+		}
 		mav.setViewName("user.jsp");
 		return mav;
 	}

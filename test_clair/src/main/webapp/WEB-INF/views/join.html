@@ -86,7 +86,7 @@
 						label: "PASSWORD",
 						labelWidth: "100px",
 						validation: function(value) {
-							const regex = /(?=.{8,})((?=.*\d)(?=.*[a-z])(?=.*[A-Z])|(?=.*\d)(?=.*[a-zA-Z])(?=.*[\W_])|(?=.*[a-z])(?=.*[A-Z])(?=.*[\W_])).*/;
+							const regex = /(?=.{8,16})((?=.*\d)(?=.*[a-z])(?=.*[A-Z])|(?=.*\d)(?=.*[a-zA-Z])(?=.*[\W_])|(?=.*[a-z])(?=.*[A-Z])(?=.*[\W_])).*/;
 							// const regex = /^(?=.*\d)(?=.*[a-zA-Z])(?=.*[\W]).{8,}$/gm; -- 4가지 모두를 충족하는 경우
 							return regex.test(value);
 						},
@@ -371,7 +371,7 @@
 					success:function(data){
 						location.replace("/" + JSON.parse(data).id); // href와의 차이: 이전 페이지로 이동할 수 없다
 					}, error:function(data){
-						alert(JSON.stringify(data));
+						//alert(JSON.stringify(data));
 						switch (data.status){
 							case 400:
 								var msg = "[에러코드: " + JSON.parse(data.responseText).code + "]\n";

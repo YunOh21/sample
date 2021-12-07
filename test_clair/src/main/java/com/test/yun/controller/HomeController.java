@@ -108,6 +108,7 @@ public class HomeController {
 				HttpSession session = req.getSession();
 				session.setAttribute("id", userBean.getId());
 				session.setAttribute("name", userBean.getName());
+				session.setAttribute("join", "true");
 				JSONObject jo = new JSONObject();
 				jo.put("uri", "/");
 				jo.put("id", userBean.getId());

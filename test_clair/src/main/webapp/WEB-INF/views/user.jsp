@@ -25,7 +25,7 @@
     }
     #grid {
     	width: 1200px;
-    	height: 446px;
+    	height: 500px;
     }
     #pagination {
     	width: 300px;
@@ -43,15 +43,14 @@
 			</nav>
 			<h1 class="dhx_sample-header__title">
 				<div class="dhx_sample-header__content">
-					홈페이지
+					${join }
 				</div>
 			</h1>
 			<nav class="dhx_sample-header__breadcrumbs">
 				<ul class="dhx_sample-header-breadcrumbs">
 					<li class="dhx_sample-header-breadcrumbs__item">
 						<a class="dhx_sample-header-breadcrumbs__link"><span id="user">${success}</span></a>
-						<a href="/user/signin" class="dhx_sample-header-breadcrumbs__link" id="login" onclick="login()">로그인</a>
-						<a href="/logout" class="dhx_sample-header-breadcrumbs__link" id="logout" onclick="logout()" style="display:none">로그아웃</a>
+						<a href="/logout" class="dhx_sample-header-breadcrumbs__link" id="logout" onclick="logout()">로그아웃</a>
 					</li>
 				</ul>
 			</nav>
@@ -59,30 +58,29 @@
 	</header>
 	<section class="dhx_sample-container" style="height: 80%">
 		<div class="flex-container">
-			<div id="grid"></div><br>
-			<div id="pagination" style="padding: 0 20px;"></div>
+			<div id="welcome" title="클릭하면 모든 사용자를 조회합니다." style="display:none;text-align:center;cursor:pointer" onclick="showGrid()"><img src="/img/welcome.jpg" width="80%"></div>
+			<div id="grid"></div>
+			<div id="pagination" style="padding: 20px;"></div>
 		</div>
 	</section>
 </body>
 <script src="https://code.jquery.com/jquery-latest.min.js"></script>
 <script>
+const welcome = $("#welcome");
+const grid = $("#grid");
+const pagination = $("#pagination");
 $(document).ready(function(){
-	 var logout = $('#logout');
-	 var login = $('#login');
-	 var user = $('#user');
-	 if('${success}'!=''&&'${success}'!='null님'){
-		 logout.show();
-		 user.show();
-		 login.hide();
-	 }else{
-		 logout.hide();
-		 user.hide();
-		 login.show();
-	 }
-	 var msg = "${msg}";
+	 // 로그인 후 경로 입력하여 로그인/회원가입 시도 시 alert 문구 발생
+	 const msg = "${msg}";
 	 console.log(msg);
 	 if(msg!=null && msg!=""){
 		 alert(msg);
+	 }
+	 // 회원가입 후 이동 시 웰컴 이미지 표시
+	 if('${join}'!=""){
+		 welcome.show();
+		 grid.hide();
+		 pagination.hide();
 	 }
 		$.ajax({
 			url : '/file/success',
@@ -90,12 +88,12 @@ $(document).ready(function(){
 			success:function(data){
 				const grid = new dhx.Grid("grid", {
 					columns: [
-						{ width: 200, id: "id", header: [{ text: "ID" }] },
-						{ width: 200, id: "pwd", header: [{ text: "패스워드" }] },
-						{ width: 150, id: "name", header: [{ text: "이름" }] },
-						{ width: 100, id: "level", header: [{ text: "등급" }] },
-						{ width: 295, id: "desc", header: [{ text: "특이사항" }] },
-						{ width: 252, id: "regDate", header: [{ text: "등록일자" }] },
+						{ width: 200, id: "id", header: [{ text: "ID" }, { content: "inputFilter" }] },
+						{ width: 200, id: "pwd", header: [{ text: "패스워드" }, { content: "inputFilter" }] },
+						{ width: 150, id: "name", header: [{ text: "이름" }, { content: "inputFilter" }] },
+						{ width: 100, id: "level", header: [{ text: "등급" }, { content: "selectFilter" }] },
+						{ width: 300, id: "desc", header: [{ text: "특이사항" }, { content: "inputFilter" }] },
+						{ width: 248, id: "regDate", header: [{ text: "등록일자" }, { content: "selectFilter" }] },
 					],
 					data: data
 				});
@@ -116,6 +114,12 @@ function logout(){
 //로그인
 function login(){
 	location.replace("/user/signin");
+}
+//웰컴 이미지 클릭 시 grid 표시
+function showGrid(){
+	welcome.hide();
+	grid.show();
+	pagination.show();
 }
 </script>
 </html>
