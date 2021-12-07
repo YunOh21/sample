@@ -56,7 +56,15 @@
 			<div id="form" style="height: 100%; margin: 20px;"></div>
 		</section>
 		<script src="https://code.jquery.com/jquery-latest.js"></script>
+		<script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 		<script>
+			// 달력 로컬라이제이션
+			var ko = {
+					monthsShort: ["1월", "2월", "3월", "4월", "5월", "6월", "7월", "8월", "9월", "10월", "11월", "12월"],
+					months: ["1월", "2월", "3월", "4월", "5월", "6월", "7월", "8월", "9월", "10월", "11월", "12월"],
+					daysShort: ["일", "월", "화", "수", "목", "금", "토"]
+			};
+			dhx.i18n.setLocale("calendar", ko);
 			const form = new dhx.Form("form", {
 				css: "dhx_widget--bordered",
 				padding: 40,
@@ -91,7 +99,7 @@
 							return regex.test(value);
 						},
 						preMessage: "암호는 영문 대소문자/숫자/특수문자 중 3가지 이상 포함하여 8자리 이상, 16자리 이하여야 합니다.",
-						erroMessage: "암호는 영문 대소문자/숫자/특수문자 중 3가지 이상 포함하여 8자리 이상, 16자리 이하여야 합니다.",
+						errorMessage: "암호는 영문 대소문자/숫자/특수문자 중 3가지 이상 포함하여 8자리 이상, 16자리 이하여야 합니다.",
 						name: "pwd",
 						minlength: "8",
 						maxlength: "16",
@@ -146,7 +154,6 @@
 						validation: function(value) {
 							return value.length > 0;
 						},
-						preMessage: "등급을 선택해 주세요.",
 						errorMessage: "등급이 선택되지 않았습니다.",
 						id: "userLevel",
 						required: "true",
@@ -182,7 +189,6 @@
 							return regexDate.test(form.getItem("regDate").getValue());
 						},
 						errorMessage: "등록일자가 선택되지 않았습니다.",
-						preMessage: "등록일자를 선택해 주세요.",
 						required: true
 					},
 					{
@@ -257,63 +263,16 @@
 					console.log("--------------");
 					val1 && val2 && val3 > 0 && val4 > 0 && val5? send.enable() : send.disable();
 				});
-				
-				// forEach로 array에 담는 경우
-/* 				var inputCount = 0;
-				var inputArray = [];
-				var isAllValid = false;
-				
-				form.forEach(function(item, index, array){
-					let type = item.config.type;
-					
-					switch (type) {
-					case "input":
-					case "select":
-					case "datepicker":
-						inputCount++;
-						
-						item.events.on(["change" , "input"],function(e){
-							console.log('e is'+ e);
-						});
-						
-					default:
-						break;
-					}
-					
-					
-				}) */
-				
-				// forEach
-/* 				form.forEach(function(item, index, array) {
-					if(item.config.type=="input"){
-						//console.log(item.config.value);
-						form.events.on("input", function(){
-							form.getItem("id").getValue()!="" && form.getItem("pwd").getValue()!=""? send.enable() : send.disable();
-						});
-					} */
-				
-				// findAll
-/* 				var items = form.findAll(function(items){
-				    if(items.config.type === "input"){
-				    	console.log('type is input');
-				    	return true;
-				    }
-				}); */
-				 
-				
 			});
-// 			form.events.on("change", function(){
-// 				const regexId = /^(?=.*\d)(?=.*[a-z]).{4,}$/gm;
-// 				const regexPwd = /(?=.{8,})((?=.*\d)(?=.*[a-z])(?=.*[A-Z])|(?=.*\d)(?=.*[a-zA-Z])(?=.*[\W_])|(?=.*[a-z])(?=.*[A-Z])(?=.*[\W_])).*/;
-// 				regexId.test(form.getItem("id").getValue())==true && regexPwd.test(form.getItem("pwd").getValue())==true && form.getItem("name").getValue()!=""
-// 				&& form.getItem("level").getValue()!="" && form.getItem("regDate").getValue()!=""? send.enable() : send.disable();
-// 			});
 			
-			// ID에 한글입력 불가
+			const hangeul = /[ㄱ-ㅎ|ㅏ-ㅣ|가-힣]/;
+			const special = /[\{\}\[\]\/?.,;:|\)*~`!^\-_+┼<>@\#$%&\'\"\\\(\=]/gi;
+			// const space = /\s/g; -- 공백 정규식: dhtmlx input 자체에서 스페이스 입력 시 공백처리(문구는 발생x)
+			const num = /\d/;
+			
+			// ID에 한글,특수문자 입력 불가
 			form.getItem("id").events.on("input", function(){
 				const inputVal = form.getItem("id").getValue();
-				const hangeul = /[ㄱ-ㅎ|ㅏ-ㅣ|가-힣]/;
-				const special = /[\{\}\[\]\/?.,;:|\)*~`!^\-_+┼<>@\#$%&\'\"\\\(\=]/gi;
 				if(hangeul.test(inputVal)){
 					form.getItem("id").setValue("");
 					form.getItem("id").setProperties({errorMessage:"ID에 한글은 입력 불가합니다."});
@@ -325,11 +284,10 @@
 				}
 			});
 			
-			// 패스워드에 한글입력 불가
-			// ISSUE: 패스워드 입력 시 한글로 입력해도 영문으로 인식되어 현재 동작 안 함
+			// 패스워드에 한글 입력 불가
+			// ISSUE: 패스워드 입력 시 한글로 입력 시 영문으로 인식함
 			form.getItem("pwd").events.on("input", function(){
 				const inputVal = form.getItem("pwd").getValue();
-				const hangeul = /[ㄱ-ㅎ|ㅏ-ㅣ|가-힣]/;
 				if(hangeul.test(inputVal)){
 					form.getItem("pwd").setValue("");
 					form.getItem("pwd").setProperties({errorMessage:"패스워드에 한글은 입력 불가합니다."});
@@ -339,21 +297,23 @@
 			// 이름에 숫자,특수문자 입력 불가
 			form.getItem("name").events.on("input", function(){
 				const inputVal = form.getItem("name").getValue();
-				const num = /\d/;
-				const special = /[\{\}\[\]\/?.,;:|\)*~`!^\-_+┼<>@\#$%&\'\"\\\(\=]/gi;
 				if(num.test(inputVal)){
 					form.getItem("name").setValue("");
 					form.getItem("name").setProperties({errorMessage:"이름에 숫자는 입력 불가합니다."});
-				}
-				if(special.test(inputVal)){
+				}else if(special.test(inputVal)){
 					form.getItem("name").setValue("");
 					form.getItem("name").setProperties({errorMessage:"이름에 특수문자는 입력 불가합니다."});
+				}else{
+					form.getItem("name").setProperties({errorMessage:""});
 				}
 			});
-			// 이름 입력 없이 다른 칸 이동 시 에러문구 -- 단, properties는 설정되었음에도 errorMessage 표시 안됨
+			
+			// 이름 입력 없이 다른 칸 이동 시 에러
+			// ISSUE: preMessage/errorMessage 동작 조건 파악 부족
 			form.getItem("name").events.on("blur", function(){
 				//console.log(form.getItem("name").getValue().length);
 				if(form.getItem("name").getValue().length==0){
+					form.getItem("name").setProperties({preMessage:"이름이 입력되지 않았습니다."}); // error아닌 경우(사유 파악 못함) preMessage 표시
 					form.getItem("name").setProperties({errorMessage:"이름이 입력되지 않았습니다."});
 				}
 			});
@@ -374,24 +334,41 @@
 						//alert(JSON.stringify(data));
 						switch (data.status){
 							case 400:
-								var msg = "[에러코드: " + JSON.parse(data.responseText).code + "]\n";
-								msg += "아래 " + JSON.parse(data.responseText).fields.length + "개 항목을 다시 확인해주세요." + "\n";
+								var code = "[에러코드: " + JSON.parse(data.responseText).code + "]";
+								var msg = "아래 항목을 다시 확인해주세요.";
+								var detail = "";
 								for(i=0; i<JSON.parse(data.responseText).fields.length; i++){
-									msg += (i+1)+". " + JSON.parse(data.responseText).fields[i].field + "\n"
-											+ "- 사유: " + JSON.parse(data.responseText).fields[i].reason + "\n";
+									detail += "- " + JSON.parse(data.responseText).fields[i].field + " "
+											+ "(" + JSON.parse(data.responseText).fields[i].reason + ")<br>";
 								}
-								alert(msg);
+								showError(code, msg, detail);
 								break;
 							case 500:
-								alert('서버측 기타오류');
+								showError();
 								break;
-							default:
-								alert('HTTP 에러 상태 코드: '+data.status);
-								break;
+// 							default:
+// 								alert('HTTP 에러 상태 코드: '+data.status);
+// 								break;
 						}
 					}
 				})
 			});
+			
+			// 에러 alert
+			function showError(code, msg, detail){
+				Swal.fire({
+					icon: 'error',
+					title: code,
+					text: msg,
+					footer: detail
+				})
+			}
+			function showError(){
+				Swal.fire({
+					icon: 'error',
+					title: '서버측 기타오류'
+				})
+			}
 		</script>
 	</body>
 </html>

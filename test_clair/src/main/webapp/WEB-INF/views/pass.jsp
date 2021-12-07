@@ -25,7 +25,7 @@
     }
     #grid {
     	width: 1200px;
-    	height: 446px;
+    	height: 500px;
     }
     #pagination {
     	width: 300px;
@@ -71,12 +71,12 @@ $('#showResult').click(function(){
 		success:function(data){
 			const grid = new dhx.Grid("grid", {
 				columns: [
-					{ width: 200, id: "id", header: [{ text: "ID" }] },
-					{ width: 200, id: "pwd", header: [{ text: "패스워드" }] },
-					{ width: 150, id: "name", header: [{ text: "이름" }] },
-					{ width: 100, id: "level", header: [{ text: "등급" }] },
-					{ width: 295, id: "desc", header: [{ text: "특이사항" }] },
-					{ width: 252, id: "regDate", header: [{ text: "등록일자" }] },
+					{ width: 200, id: "id", header: [{ text: "ID" }, { content: "inputFilter" }] },
+					{ width: 200, id: "pwd", header: [{ text: "패스워드" }, { content: "inputFilter" }] },
+					{ width: 150, id: "name", header: [{ text: "이름" }, { content: "inputFilter" }] },
+					{ width: 100, id: "level", header: [{ text: "등급" }, { content: "selectFilter" }] },
+					{ width: 300, id: "desc", header: [{ text: "특이사항" }, { content: "inputFilter" }] },
+					{ width: 248, id: "regDate", header: [{ text: "등록일자" }, { content: "selectFilter" }] },
 				],
 				data: data
 			});

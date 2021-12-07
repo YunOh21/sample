@@ -1,6 +1,7 @@
 package com.test.yun.controller;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -96,13 +97,14 @@ public class HomeController {
 	@ResponseBody
 	public ResponseEntity<String> join(@Valid @RequestBody UserBean userBean, HttpServletRequest req) {
 		ResponseEntity<String> result;
-		/* null 테스트 */
-//		userBean.setId("");
+		/* null, 범위초과 테스트 */
+//		userBean.setId("123456781234qqqqqqqq000000qqqqqqqqqqqq");
 //		userBean.setPwd("");
-//		userBean.setLevel("");
+//		userBean.setLevel("222");
 		/* 날짜에 시간 더함 */
 		userBean.setRegDate(userBean.getRegDate() + " 00:00:00");
-		HashMap<String, String> invalidJoinMap = joinValidCheck.validCheck(userBean);
+		LinkedHashMap<String, String> invalidJoinMap = joinValidCheck.validCheck(userBean);
+		System.out.println(invalidJoinMap.size());
 		if (invalidJoinMap.size() == 0) {
 			if (fileService.insertUser(userBean)) {
 				HttpSession session = req.getSession();
@@ -117,7 +119,7 @@ public class HomeController {
 				JSONObject parent = new JSONObject();
 				JSONArray children = new JSONArray();
 				JSONObject child = new JSONObject();
-				child.put("field", userBean.getId());
+				child.put("field", "ID");
 				child.put("reason", "이미 존재하는 ID입니다.");
 				children.add(child);
 				parent.put("code", 1001);
@@ -145,7 +147,8 @@ public class HomeController {
 		return result;
 	}
 
-	// 회원가입 Validation 예외처리 -- 현재 에러케이스는 처음 컨트롤러에 전달된 상황에서는 발생하지 않음. 추후 적용 시 json으로 변환 필요.
+	// 회원가입 Validation 예외처리 -- 현재 에러케이스는 처음 컨트롤러에 전달된 상황에서는 발생하지 않음. 추후 적용 시 json으로
+	// 변환 필요.
 	@ExceptionHandler(MethodArgumentNotValidException.class)
 	@ResponseBody
 	public String handleValidationException(MethodArgumentNotValidException exception) {

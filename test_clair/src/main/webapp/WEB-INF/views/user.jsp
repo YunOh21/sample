@@ -93,9 +93,11 @@ $(document).ready(function(){
 						{ width: 150, id: "name", header: [{ text: "이름" }, { content: "inputFilter" }] },
 						{ width: 100, id: "level", header: [{ text: "등급" }, { content: "selectFilter" }] },
 						{ width: 300, id: "desc", header: [{ text: "특이사항" }, { content: "inputFilter" }] },
+						// calendar(or datepicker)로 from-to 검색방법 확인중
 						{ width: 248, id: "regDate", header: [{ text: "등록일자" }, { content: "selectFilter" }] },
 					],
-					data: data
+					data: data,
+					htmlEnable: true
 				});
 				const pagination = new dhx.Pagination("pagination", {
 				    css: "dhx_widget--bordered dhx_widget--no-border_top",

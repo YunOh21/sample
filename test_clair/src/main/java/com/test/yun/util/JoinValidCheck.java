@@ -46,41 +46,22 @@ public class JoinValidCheck {
 	// 데이터 확인
 	public LinkedHashMap<String, String> validCheck(UserBean userBean) {
 		LinkedHashMap<String, String> invalidJoinMap = new LinkedHashMap<String, String>();
-		if (nullCheck(userBean, invalidJoinMap).size()!=0) {
-			System.out.println("실패사유: null 있음");
-			System.out.println("map size: "+invalidJoinMap.size());
-			System.out.println("ID invalid 사유: "+invalidJoinMap.get("ID"));
-			System.out.println("PASSWORD invalid 사유: "+invalidJoinMap.get("PASSWORD"));
-			return invalidJoinMap;
-		}
-		if (sizeCheck(userBean, invalidJoinMap).size()!=0) {
-			System.out.println("실패사유: 입력할 수 있는 범위를 초과하였습니다.");
-			return invalidJoinMap;
-		}
-		if (timeCheck(userBean, invalidJoinMap).size()!=0) {
-			System.out.println("실패사유: 등록일자 형식이 맞지 않습니다.");
-			return invalidJoinMap;
-		}
-		return invalidJoinMap;
+		return timeCheck(userBean, sizeCheck(userBean, nullCheck(userBean, invalidJoinMap)));
 	}
 
 	// NN 칼럼 null 체크
 	public LinkedHashMap<String, String> nullCheck(UserBean userBean, LinkedHashMap<String, String> invalidJoinMap) {
 		if (userBean.getId() == null || userBean.getId().equals("")) {
 			invalidJoinMap.put("ID", "ID가 입력되지 않았습니다.");
-			System.out.println("map size: "+invalidJoinMap.size());
-			System.out.println("ID invalid 사유: "+invalidJoinMap.get("ID"));
 		}
 		if (userBean.getPwd() == null || userBean.getPwd().equals("")) {
 			invalidJoinMap.put("PASSWORD", "비밀번호가 입력되지 않았습니다.");
-			System.out.println("map size: "+invalidJoinMap.size());
-			System.out.println("PASSWORD invalid 사유: "+invalidJoinMap.get("PASSWORD"));
 		}
 		if (userBean.getName() == null || userBean.getName().equals("")) {
 			invalidJoinMap.put("이름", "이름이 입력되지 않았습니다.");
 		}
 		if (userBean.getLevel() == null || userBean.getLevel().equals("")) {
-			invalidJoinMap.put("레벨", "레벨이 입력되지 않았습니다.");
+			invalidJoinMap.put("등급", "등급이 입력되지 않았습니다.");
 		}
 		if (userBean.getRegDate() == null || userBean.getRegDate().equals("")) {
 			invalidJoinMap.put("등록일자", "등록일자가 입력되지 않았습니다.");
@@ -91,19 +72,19 @@ public class JoinValidCheck {
 	// 데이터 사이즈 초과 체크
 	public LinkedHashMap<String, String> sizeCheck(UserBean userBean, LinkedHashMap<String, String> invalidJoinMap) {
 		if (userBean.getId().length() > idLength) {
-			invalidJoinMap.put("ID", "ID가 너무 깁니다.");
+			invalidJoinMap.put("ID: "+userBean.getId(), "ID가 너무 깁니다.");
 		}
 		if (userBean.getPwd().length() > pwdLength) {
-			invalidJoinMap.put("PASSWORD", "비밀번호가 너무 깁니다.");
+			invalidJoinMap.put("PASSWORD: "+userBean.getPwd(), "비밀번호가 너무 깁니다.");
 		}
 		if (userBean.getName().length() > nameLength) {
-			invalidJoinMap.put("이름", "이름이 너무 깁니다.");
+			invalidJoinMap.put("이름: "+userBean.getName(), "이름이 너무 깁니다.");
 		}
 		if (userBean.getLevel().length() > levelLength) {
-			invalidJoinMap.put("레벨", "레벨은 알파벳 한 글자만 가능합니다.");
+			invalidJoinMap.put("등급: "+userBean.getLevel(), "레벨은 알파벳 한 글자만 가능합니다.");
 		}
 		if (userBean.getDesc().length() > descLength) {
-			invalidJoinMap.put("특이사항", "특이사항이 너무 깁니다.");
+			invalidJoinMap.put("특이사항: "+userBean.getDesc(), "특이사항이 너무 깁니다.");
 		}
 		return invalidJoinMap;
 	}
@@ -114,7 +95,7 @@ public class JoinValidCheck {
 			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 			dateFormat.parse(userBean.getRegDate());
 		} catch (ParseException e) {
-			invalidJoinMap.put("등록일자", "등록일자 형식을 확인해 주세요.");
+			invalidJoinMap.put("등록일자: "+userBean.getRegDate(), "등록일자 형식을 확인해 주세요.");
 		}
 		return invalidJoinMap;
 	}
