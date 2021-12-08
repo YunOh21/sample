@@ -2,9 +2,7 @@ package com.test.yun.util;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.LinkedHashMap;
-import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,6 +46,11 @@ public class JoinValidCheck {
 	/* UserBean 데이터 체크 */
 	// 데이터 확인
 	public LinkedHashMap<String, String> validCheck(UserBean userBean) {
+		logger.info(String.valueOf(idLength));
+		logger.info(String.valueOf(pwdLength));
+		logger.info(String.valueOf(nameLength));
+		logger.info(String.valueOf(levelLength));
+		logger.info(String.valueOf(descLength));
 		LinkedHashMap<String, String> invalidJoinMap = new LinkedHashMap<String, String>();
 		return timeCheck(userBean, sizeCheck(userBean, nullCheck(userBean, invalidJoinMap)));
 	}
