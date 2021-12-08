@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -13,7 +15,8 @@ import com.test.yun.dto.UserBean;
 
 @Service
 public class JoinValidCheck {
-	
+	private static Logger logger = LoggerFactory.getLogger(JoinValidCheck.class);
+
 	@Value("${id.length}")
 	private int idLength;
 	
@@ -35,8 +38,8 @@ public class JoinValidCheck {
 	// 6개 초과: 잘못된 데이터이므로 입력 방지 -- 초기 버전. 현재는 6개 미만인 경우에만 false
 	public boolean isValid(String line, int colnum) {
 		if (line.split("/").length < colnum) {
-			System.out.println(line.split("/")[0]);
-			System.out.println("실패사유: 칼럼 수 부족");
+			logger.info(line.split("/")[0]);
+			logger.info("실패사유: 칼럼 수 부족");
 			return false;
 		}
 		return true;
