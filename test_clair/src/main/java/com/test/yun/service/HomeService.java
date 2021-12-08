@@ -8,6 +8,8 @@ import javax.servlet.http.HttpSession;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -16,9 +18,11 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.test.yun.dto.FileBean;
 import com.test.yun.dto.UserBean;
+import com.test.yun.util.JoinValidCheck;
 
 @Service
 public class HomeService {
+	private static Logger logger = LoggerFactory.getLogger(HomeService.class);
 
 	@Autowired
 	private FileService fileService;
@@ -79,10 +83,10 @@ public class HomeService {
 		ModelAndView mav = uploadFail();
 		if (file != null) {
 			fb = fileService.save(file);
-			System.out.println(fb.getMsg());
+			logger.info(fb.getMsg());
 			if (fb.getMsg().equals("saveOK")) {
 				fb = fileService.read(fb);
-				System.out.println(fb.getMsg());
+				logger.info(fb.getMsg());
 				if (fb.getMsg().equals("readOK")) {
 					if(fb.getFdata()!=null) {
 						if (fb.getTotal() == fb.getSuccess()) {
