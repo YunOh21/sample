@@ -178,7 +178,7 @@ $(document).ready(function(){
 					grid.data.filter(function(item){
 						var regDate = item.regDate.split(" ")[0];
 						if(from.value==""){
-							return regDate >= from.value;
+							return regDate <= to.value;
 						}else if(to.value==from.value){
 							return regDate == from.value;
 						}else{
