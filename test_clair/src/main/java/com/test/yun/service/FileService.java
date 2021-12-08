@@ -10,6 +10,8 @@ import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -21,6 +23,7 @@ import com.test.yun.util.JoinValidCheck;
 
 @Service
 public class FileService {
+	private static Logger logger = LoggerFactory.getLogger(FileService.class);
 
 	@Autowired
 	private UserMapper userMapper;
@@ -96,7 +99,7 @@ public class FileService {
 								fdata.put(totalcount, line + " -> 이미 존재하는 ID입니다.");
 							}
 						} else {
-							System.out.println(line);
+							logger.info(line);
 							fdata.put(totalcount, line + " -> 필수값이 비어있거나, 입력할 수 있는 범위를 초과하였습니다.");
 						}
 					} else {

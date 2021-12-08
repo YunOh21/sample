@@ -37,7 +37,7 @@
 			<nav class="dhx_sample-header__breadcrumbs">
 				<ul class="dhx_sample-header-breadcrumbs">
 					<li class="dhx_sample-header-breadcrumbs__item">
-						<a href="/" class="dhx_sample-header-breadcrumbs__link">홈 화면으로</a>
+						<a href="/" class="dhx_sample-header-breadcrumbs__link">파일전송</a>
 					</li>
 				</ul>
 			</nav>

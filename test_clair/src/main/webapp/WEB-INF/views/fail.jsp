@@ -22,7 +22,7 @@
 			<nav class="dhx_sample-header__breadcrumbs">
 				<ul class="dhx_sample-header-breadcrumbs">
 								<li class="dhx_sample-header-breadcrumbs__item">
-									<a href="/" class="dhx_sample-header-breadcrumbs__link">홈 화면으로</a>
+									<a href="/" class="dhx_sample-header-breadcrumbs__link">파일전송</a>
 								</li>
 							</ul>
 			</nav>
@@ -34,7 +34,7 @@
 		</div>
 	</header>
 	<section class="dhx_sample-container" style="height: 80%">
-		<div style="height: 100%; width: 100%" id="grid"></div>
+		<div style="height: 500px; width: 1200px" id="grid"></div>
 	</section>
 	<script>
 		const grid = new dhx.Grid("grid", {
