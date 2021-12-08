@@ -52,6 +52,7 @@
 			<div id="form" style="height: 100%; margin: 20px;"></div>
 		</section>
 		<script src="https://code.jquery.com/jquery-latest.js"></script>
+		<script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 		<script>
 			const form = new dhx.Form("form", {
 				css: "dhx_widget--bordered",
@@ -111,20 +112,30 @@
 						//alert(data.id);
 						location.replace("/" + data.id); // href와의 차이: 이전 페이지로 이동할 수 없다
 					}, error:function(data){
+						var msg = "";
 						switch (data.status){
 							case 401:
-								alert('권한없음 - 아이디 혹은 패스워드 틀림');
+								msg = '권한없음 - 아이디 혹은 패스워드 틀림';
+								showError(msg);
 								break;
 							case 500:
-								alert('서버측 기타오류');
+								msg = '서버측 기타오류';
+								showError(msg);
 								break;
 							default:
-								alert('HTTP 에러 상태 코드: '+data.status);
+								msg = 'HTTP 에러 상태 코드: '+data.status;
+								showError(msg);
 								break;
 						}
 					}
 				})
 			});
+			function showError(msg){
+				Swal.fire({
+					icon: 'error',
+					title: '서버측 기타오류'
+				})
+			}
 		</script>
 	</body>
 </html>
