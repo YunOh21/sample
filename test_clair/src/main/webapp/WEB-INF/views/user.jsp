@@ -30,6 +30,22 @@
     #pagination {
     	width: 300px;
     }
+    .customDatepicker {
+    	width:105px;
+    	height:28px;
+    	border-radius:2px;
+    	box-shadow:inset 0 0 0 1px #dfdfdf;
+    	border:0;
+    	color: rgba(0,0,0,.7);
+    	padding: 0 25px 0 4px;
+    }
+    .customDatepicker:focus {
+    	outline: none;
+    	box-shadow: 0 0 1px rgba(81, 203, 238, 1);
+  		padding: 3px 0px 3px 3px;
+  		margin: 5px 1px 3px 0px;
+  		border: 1px solid rgba(81, 203, 238, 1);
+    }
 </style>
 <body>
 	<header class="dhx_sample-header">
@@ -93,31 +109,97 @@ $(document).ready(function(){
 						{ width: 150, id: "name", header: [{ text: "이름" }, { content: "inputFilter" }] },
 						{ width: 100, id: "level", header: [{ text: "등급" }, { content: "selectFilter" }] },
 						{ width: 300, id: "desc", header: [{ text: "특이사항" }, { content: "inputFilter" }] },
-						// calendar(or datepicker)로 from-to 검색방법 확인중
-						{ width: 248, id: "regDate", header: [{ text: "등록일자" }, { content: "selectFilter" }] },
+						{ width: 248, id: "regDate", 
+							header: [{ text: "등록일자" },
+											{ text : "<input type='text' id='from' class='customDatepicker' readonly><span style='color: #c0c0c0'>&nbsp;~&nbsp;</span><input type='text' id='to' class='customDatepicker' readonly>", headerSort: false}],
+							htmlEnable: true
+						},
 					],
-					data: data,
-					htmlEnable: true
+					data: data
 				});
 				const pagination = new dhx.Pagination("pagination", {
 				    css: "dhx_widget--bordered dhx_widget--no-border_top",
 				    data: grid.data,
 				    pageSize: 10
 				});
+				// 달력 로컬라이제이션
+				const ko = {
+						monthsShort: ["1월", "2월", "3월", "4월", "5월", "6월", "7월", "8월", "9월", "10월", "11월", "12월"],
+						months: ["1월", "2월", "3월", "4월", "5월", "6월", "7월", "8월", "9월", "10월", "11월", "12월"],
+						daysShort: ["일", "월", "화", "수", "목", "금", "토"]
+				};
+				dhx.i18n.setLocale("calendar", ko);
+				// 달력 검색 from(시작일) 생성
+				const fromCalendar = new dhx.Calendar(null, {dateFormat: "%Y-%m-%d"});
+				const fromPopup = new dhx.Popup();
+				fromPopup.attach(fromCalendar);
+				const from = document.getElementById("from");
+				from.addEventListener("click", function(){
+					fromPopup.show(from);
+				});
+				fromCalendar.events.on("change", function() {
+				  from.value = fromCalendar.getValue();
+				  fromPopup.hide();
+				  if(to.value!=""&&from.value>to.value){
+					  alert('검색시작일은 검색종료일 이전이어야 합니다.');
+					  from.value = "";
+				  }
+				});
+				// 달력 검색 to(종료일) 생성
+				const toCalendar = new dhx.Calendar(null, {dateFormat: "%Y-%m-%d"});
+				const toPopup = new dhx.Popup();
+				toPopup.attach(toCalendar);
+				const to = document.getElementById("to");
+				to.addEventListener("click", function(){
+					toPopup.show(from);
+				});
+				toCalendar.events.on("change", function() {
+				  to.value = toCalendar.getValue();
+				  toPopup.hide();
+				  if(from.value!=""&&from.value>to.value){
+					  alert('검색종료일은 검색시작일 이후여야 합니다.');
+					  to.value = "";
+				  }
+				});
+				// 달력 검색 기능
+				fromPopup.events.on("afterHide", function(){
+					grid.data.filter(function(item){
+						var regDate = item.regDate.split(" ")[0];
+						if(to.value==""){
+							return regDate >= from.value;
+						}else if(to.value==from.value){
+							return regDate == from.value;
+						}else{
+							return regDate >= from.value && regDate <= to.value;
+						}
+					});
+				});
+				toPopup.events.on("afterHide", function(){
+					grid.data.filter(function(item){
+						var regDate = item.regDate.split(" ")[0];
+						if(from.value==""){
+							return regDate >= from.value;
+						}else if(to.value==from.value){
+							return regDate == from.value;
+						}else{
+							return regDate >= from.value && regDate <= to.value;
+						}
+					});
+				});
 			}, error:function(){
 				alert("서버연결에 실패하였습니다.");
 			}
 		})
 }); 
-//로그아웃
+// 로그아웃
 function logout(){
 	location.replace("/logout");
 }
-//로그인
+// 로그인
 function login(){
 	location.replace("/user/signin");
 }
-//웰컴 이미지 클릭 시 grid 표시
+// 웰컴 이미지 클릭 시 grid 표시
 function showGrid(){
 	welcome.hide();
 	grid.show();

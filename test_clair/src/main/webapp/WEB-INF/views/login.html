@@ -30,7 +30,7 @@
 				<nav class="dhx_sample-header__breadcrumbs">
 					<ul class="dhx_sample-header-breadcrumbs">
 								<li class="dhx_sample-header-breadcrumbs__item">
-									<a href="/" class="dhx_sample-header-breadcrumbs__link">홈 화면으로</a>
+									<a href="/" class="dhx_sample-header-breadcrumbs__link">파일전송</a>
 								</li>
 							</ul>
 				</nav>
@@ -124,30 +124,7 @@
 						}
 					}
 				})
-				/* dhx.ajax.post("user/signin", jsonData).then(function(data){
-					window.location.href = 'home.jsp';
-					return true;
-				}).catch(function(err){
-					console.log(err);
-					return false;
-				}); */
 			});
-
-			/* $(document).ready(function(){
-				form.forEach(function(item, index, array) {
-					if(item.config.type=="input"){
-						//console.log(item.config.value);
-						form.events.on("input", function(){
-							form.getItem("id").getValue()!="" && form.getItem("pwd").getValue()!=""? send.enable() : send.disable();
-						});
-					}
-				});
-	 			 $("input").on("input", (function(){
-	 				console.log($("input[name=id]").val());
-	 				console.log($("input[name=pwd]").val());
-	 				$("input[name=id]").val()!="" && $("input[name=pwd]").val()!=""? send.enable() : send.disable();
-	 			}));  
-			}); */
 		</script>
 	</body>
 </html>
