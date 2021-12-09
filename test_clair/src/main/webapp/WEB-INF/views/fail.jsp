@@ -33,9 +33,10 @@
 			</h1>
 		</div>
 	</header>
-	<section class="dhx_sample-container" style="height: 80%">
-		<div style="height: 500px; width: 1200px" id="grid"></div>
+	<section class="dhx_sample-container">
+		<div id="grid"></div>
 	</section>
+	<script src="https://code.jquery.com/jquery-latest.js"></script>
 	<script>
 		const grid = new dhx.Grid("grid", {
 			columns: [
@@ -44,8 +45,16 @@
 				{ width: 498, id: "failReason", header: [{ text: "실패사유" }] },
 			],
 			data: ${failData},
+			// width와 height를 데이터에 맞추는 법: 확인중
+			width: 1200,
+			height: 250,
 			adjust: true
 		});
+		// adjust div height to grid content
+		window.onload = function adjustGrid(){
+			$("#grid").height($(".dhx_grid-body").height());
+			$("#grid").width($(".dhx_grid-body").width());
+		}
 	</script>
 </body>
 </html>

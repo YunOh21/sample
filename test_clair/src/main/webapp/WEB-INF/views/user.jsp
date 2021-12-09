@@ -1,5 +1,4 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ page session="false" %>
 <html>
 <head>
 	<title>홈페이지</title>
@@ -80,24 +79,34 @@
 		</div>
 	</section>
 </body>
-<script src="https://code.jquery.com/jquery-latest.min.js"></script>
+<script src="https://code.jquery.com/jquery-latest.js"></script>
+<script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
 const welcome = $("#welcome");
 const grid = $("#grid");
 const pagination = $("#pagination");
 $(document).ready(function(){
-	 // 로그인 후 경로 입력하여 로그인/회원가입 시도 시 alert 문구 발생
-	 const msg = "${msg}";
-	 console.log(msg);
-	 if(msg!=null && msg!=""){
-		 alert(msg);
-	 }
 	 // 회원가입 후 이동 시 웰컴 이미지 표시
 	 if('${join}'!=""){
 		 welcome.show();
 		 grid.hide();
 		 pagination.hide();
 	 }
+	 // 로그인 후 경로 입력하여 로그인/회원가입 시도 시, user.jsp로 자동이동 후 alert 문구 발생
+	 const msg = "${msg}";
+	 console.log(msg);
+	 if(msg!=null && msg!=""){
+		 Swal.fire('', msg);
+	 }
+	 // 세션 만료 시 로그인 페이지로 이동
+	 if('${success}'=='[null 님]&nbsp;'){
+		 Swal.fire('', "세션이 만료되었습니다. 로그인 화면으로 이동합니다.").then(function(){
+			 location.replace('/user/signin');
+		 }).catch(function(err)){
+			 alert('알 수 없는 오류가 발생했습니다.'); // SweetAlert2 인식 못한 경우
+		 }
+	 }
+	 // 페이지 로드 시 전체 사용자 데이터 조회 (파일 업로드 성공 시 사용한 url 재사용)
 		$.ajax({
 			url : '/file/success',
 			dataType : 'json',
@@ -110,7 +119,7 @@ $(document).ready(function(){
 						{ width: 100, id: "level", header: [{ text: "등급" }, { content: "selectFilter" }] },
 						{ width: 300, id: "desc", header: [{ text: "특이사항" }, { content: "inputFilter" }] },
 						{ width: 248, id: "regDate", 
-							header: [{ text: "등록일자" },
+							header: [{ text: "생년월일" },
 											{ text : "<input type='text' id='from' class='customDatepicker' readonly><span style='color: #c0c0c0'>&nbsp;~&nbsp;</span><input type='text' id='to' class='customDatepicker' readonly>", headerSort: false}],
 							htmlEnable: true
 						},
@@ -141,7 +150,7 @@ $(document).ready(function(){
 				  from.value = fromCalendar.getValue();
 				  fromPopup.hide();
 				  if(to.value!=""&&from.value>to.value){
-					  alert('검색시작일은 검색종료일 이전이어야 합니다.');
+					  Swal.fire('', '검색시작일은 검색종료일 이전이어야 합니다.');
 					  from.value = "";
 				  }
 				});
@@ -151,13 +160,13 @@ $(document).ready(function(){
 				toPopup.attach(toCalendar);
 				const to = document.getElementById("to");
 				to.addEventListener("click", function(){
-					toPopup.show(from);
+					toPopup.show(to);
 				});
 				toCalendar.events.on("change", function() {
 				  to.value = toCalendar.getValue();
 				  toPopup.hide();
 				  if(from.value!=""&&from.value>to.value){
-					  alert('검색종료일은 검색시작일 이후여야 합니다.');
+					  Swal.fire('', '검색종료일은 검색시작일 이후여야 합니다.');
 					  to.value = "";
 				  }
 				});
@@ -187,7 +196,7 @@ $(document).ready(function(){
 					});
 				});
 			}, error:function(){
-				alert("서버연결에 실패하였습니다.");
+				showError("서버연결에 실패하였습니다.");
 			}
 		})
 }); 
@@ -204,6 +213,13 @@ function showGrid(){
 	welcome.hide();
 	grid.show();
 	pagination.show();
+}
+// ajax 실패
+function showError(msg){
+	Swal.fire({
+		icon: 'error',
+		title: msg
+	})
 }
 </script>
 </html>

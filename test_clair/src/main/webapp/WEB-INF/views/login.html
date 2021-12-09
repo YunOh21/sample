@@ -116,24 +116,26 @@
 						switch (data.status){
 							case 401:
 								msg = '권한없음 - 아이디 혹은 패스워드 틀림';
-								showError(msg);
+								showError401(msg);
 								break;
 							case 500:
 								msg = '서버측 기타오류';
-								showError(msg);
-								break;
-							default:
-								msg = 'HTTP 에러 상태 코드: '+data.status;
-								showError(msg);
+								showError500(msg);
 								break;
 						}
 					}
 				})
 			});
-			function showError(msg){
+			function showError401(msg){
 				Swal.fire({
 					icon: 'error',
-					title: '서버측 기타오류'
+					title: msg
+				})
+			}
+			function showError500(msg){
+				Swal.fire({
+					icon: 'error',
+					title: msg
 				})
 			}
 		</script>

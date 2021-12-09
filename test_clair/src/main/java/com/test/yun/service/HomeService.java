@@ -52,7 +52,7 @@ public class HomeService {
 	
 	// 세션에 유효한 id가 있을 때, 유저홈으로 리다이렉트 (홈화면, 로그인폼, 회원가입폼에 get 방식으로 접근 시)
 	public String redirectHome(String id, RedirectAttributes ra) {
-		ra.addFlashAttribute("msg", "잘못된 접근입니다. 홈 화면으로 이동합니다.");
+		ra.addFlashAttribute("msg", "잘못된 접근입니다. 회원 화면으로 이동합니다.");
 		return "redirect:/" + id;
 	}
 	
@@ -141,7 +141,8 @@ public class HomeService {
 		mav.setViewName("fail.jsp");
 		return mav;
 	}
-
+	
+	// 로그인 시 사용 메소드 - 패스워드 일치 확인
 	public boolean checkPwd(UserBean loginUser, UserBean dbUser) {
 		return loginUser.getPwd().equals(dbUser.getPwd());
 	}

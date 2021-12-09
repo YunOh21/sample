@@ -52,7 +52,7 @@ public class JoinValidCheck {
 		logger.info(String.valueOf(levelLength));
 		logger.info(String.valueOf(descLength));
 		LinkedHashMap<String, String> invalidJoinMap = new LinkedHashMap<String, String>();
-		return timeCheck(userBean, sizeCheck(userBean, nullCheck(userBean, invalidJoinMap)));
+		return timeCheck(userBean, sizeCheck(userBean, spaceCheck(userBean, nullCheck(userBean, invalidJoinMap))));
 	}
 
 	// NN 칼럼 null 체크
@@ -70,7 +70,21 @@ public class JoinValidCheck {
 			invalidJoinMap.put("등급", "등급이 입력되지 않았습니다.");
 		}
 		if (userBean.getRegDate() == null || userBean.getRegDate().equals("")) {
-			invalidJoinMap.put("등록일자", "등록일자가 입력되지 않았습니다.");
+			invalidJoinMap.put("생년월일", "생년월일이 입력되지 않았습니다.");
+		}
+		return invalidJoinMap;
+	}
+	
+	// 공백 체크
+	public LinkedHashMap<String, String> spaceCheck(UserBean userBean, LinkedHashMap<String, String> invalidJoinMap){
+		if (!userBean.getId().equals(userBean.getId().replaceAll(" ", ""))) {
+			invalidJoinMap.put("ID: "+userBean.getId(), "ID에 빈칸이 있습니다.");
+		}
+		if (!userBean.getPwd().equals(userBean.getPwd().replaceAll(" ", ""))) {
+			invalidJoinMap.put("PASSWORD: "+userBean.getPwd(), "비밀번호에 빈칸이 있습니다.");
+		}
+		if (!userBean.getName().equals(userBean.getName().replaceAll(" ", ""))) {
+			invalidJoinMap.put("이름: "+userBean.getName(), "이름에 빈칸이 있습니다.");
 		}
 		return invalidJoinMap;
 	}
@@ -87,7 +101,7 @@ public class JoinValidCheck {
 			invalidJoinMap.put("이름: "+userBean.getName(), "이름이 너무 깁니다.");
 		}
 		if (userBean.getLevel().length() > levelLength) {
-			invalidJoinMap.put("등급: "+userBean.getLevel(), "레벨은 알파벳 한 글자만 가능합니다.");
+			invalidJoinMap.put("등급: "+userBean.getLevel(), "등급은 알파벳 한 글자만 가능합니다.");
 		}
 		if (userBean.getDesc().length() > descLength) {
 			invalidJoinMap.put("특이사항: "+userBean.getDesc(), "특이사항이 너무 깁니다.");
@@ -101,7 +115,7 @@ public class JoinValidCheck {
 			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 			dateFormat.parse(userBean.getRegDate());
 		} catch (ParseException e) {
-			invalidJoinMap.put("등록일자: "+userBean.getRegDate(), "등록일자 형식을 확인해 주세요.");
+			invalidJoinMap.put("생년월일: "+userBean.getRegDate(), "생년월일 형식을 확인해 주세요.");
 		}
 		return invalidJoinMap;
 	}

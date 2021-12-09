@@ -174,7 +174,7 @@
 					},
 					{
 						type: "datepicker",
-						label: "등록일자",
+						label: "생년월일",
 						labelWidth: "100px",
 						name: "regDate",
 						dateFormat: "%Y-%m-%d",
@@ -188,7 +188,7 @@
 							const regexDate = /^\d{4}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])$/
 							return regexDate.test(form.getItem("regDate").getValue());
 						},
-						errorMessage: "등록일자가 선택되지 않았습니다.",
+						errorMessage: "생년월일이 선택되지 않았습니다.",
 						required: true
 					},
 					{
@@ -331,7 +331,12 @@
 					success:function(data){
 						location.replace("/" + JSON.parse(data).id); // href와의 차이: 이전 페이지로 이동할 수 없다
 					}, error:function(data){
-						//alert(JSON.stringify(data));
+// 						alert(JSON.stringify(data));
+// 						alert(data.status);
+// 						alert(JSON.parse(data.responseText).code);
+// 						alert(JSON.parse(data.responseText).fields.length);
+// 						alert(JSON.parse(data.responseText).fields[0].field);
+// 						alert(JSON.parse(data.responseText).fields[0].reason);
 						switch (data.status){
 							case 400:
 								var code = "[에러코드: " + JSON.parse(data.responseText).code + "]";
@@ -341,21 +346,23 @@
 									detail += "- " + JSON.parse(data.responseText).fields[i].field + " "
 											+ "(" + JSON.parse(data.responseText).fields[i].reason + ")<br>";
 								}
-								showError(code, msg, detail);
+								//alert(code);
+								//alert(msg);
+								//alert(detail);
+								showError400(code, msg, detail);
 								break;
 							case 500:
-								showError();
+								var msg2 = "서버측 기타오류";
+								showError500(msg2);
 								break;
-// 							default:
-// 								alert('HTTP 에러 상태 코드: '+data.status);
-// 								break;
 						}
 					}
 				})
 			});
 			
 			// 에러 alert
-			function showError(code, msg, detail){
+			/* 함수명이 같으면 파라미터가 다르더라도 같이 실행됨(자바스크립트는 오버로딩을 구현하지 않음) */
+			function showError400(code, msg, detail){
 				Swal.fire({
 					icon: 'error',
 					title: code,
@@ -363,10 +370,12 @@
 					footer: detail
 				})
 			}
-			function showError(){
+			
+			function showError500(param){
 				Swal.fire({
 					icon: 'error',
-					title: '서버측 기타오류'
+					title: '[에러코드: 1003]',
+					text: param
 				})
 			}
 		</script>
