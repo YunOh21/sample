@@ -15,22 +15,8 @@
 	<script type="text/javascript" src="/codebase/suite.js?v=7.2.5"></script>
 	<link rel="stylesheet" href="/codebase/suite.css?v=7.2.5">
 	<link rel="stylesheet" href="/common/index.css?v=7.2.5">
+	<link rel="stylesheet" href="/custom/css/pass.css">
 </head>
-<style>
-    .flex-container {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      flex-direction: column;
-    }
-    #grid {
-    	width: 1200px;
-    	height: 500px;
-    }
-    #pagination {
-    	width: 300px;
-    }
-</style>
 <body>
 	<header class="dhx_sample-header">
 		<div class="dhx_sample-header__main">
