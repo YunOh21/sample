@@ -31,3 +31,9 @@
 	margin: 5px 1px 3px 0px;
 	border: 1px solid rgba(81, 203, 238, 1);
 }
+
+.selectbox {
+	width: 120px;
+	height: 35px;
+	float: left;
+}

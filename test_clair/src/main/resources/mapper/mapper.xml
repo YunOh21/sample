@@ -12,4 +12,7 @@
 	<select id="selectUser" parameterType="com.test.yun.dto.UserBean" resultType="com.test.yun.dto.UserBean">
 		SELECT "id", "pwd", "name", "level", "desc", "reg_date" as regDate FROM "USER" WHERE "id" = #{id}
 	</select>
+	<select id="selectSearch" resultType="com.test.yun.dto.SearchBean">
+		SELECT real_name as realName, display_name as displayName FROM "SEARCH"
+	</select>
 </mapper>

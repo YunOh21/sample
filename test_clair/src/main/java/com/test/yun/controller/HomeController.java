@@ -36,6 +36,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.test.yun.dto.SearchBean;
 import com.test.yun.dto.UserBean;
 import com.test.yun.mapper.UserMapper;
 import com.test.yun.service.FileService;
@@ -123,7 +124,7 @@ public class HomeController {
 
 	/* 사용자 가입 -- 가입 후 자동 로그인 처리
 	response code 3가지: 1)회원가입 성공: 200 / 2)입력항목 오류: 400 / 3)기타오류: 500
-	status 400 리턴 시, 에러코드 1001/1002/1003 발생사유는 API 설계에 명시되어 있지 않음 -> 아래 내용은 임의 설정
+	status 400 리턴 시
 	- 1001: pk중복
 	- 1002: data valid 탈락
 	- 1003: DB연결 안된 경우 */
@@ -147,7 +148,7 @@ public class HomeController {
 		userBean.setRegDate(userBean.getRegDate() + " 00:00:00");
 		LinkedHashMap<String, String> invalidJoinMap = joinValidCheck.validCheck(userBean);
 		logger.info(String.valueOf(invalidJoinMap.size()));
-		if (invalidJoinMap.size() == 0) {
+		if (invalidJoinMap.size() == 0) { 
 			// DB연결 체크
 			Context context=null;
 			try {
@@ -288,4 +289,20 @@ public class HomeController {
 		}
 		return ja.toString();
 	}
+	
+	// 정보 검색 셀렉트박스 ajax
+	@RequestMapping(value = "/search", method = RequestMethod.GET, produces = "application/text; charset=utf8")
+	@ResponseBody
+	public String searchBase() {
+		List<SearchBean> select = userMapper.selectSearch();
+		JSONArray ja = new JSONArray();
+		for (int i=0; i < select.size(); i++) {
+			JSONObject jo = new JSONObject();
+			jo.put("id", select.get(i).getRealName());
+			jo.put("value", select.get(i).getDisplayName());
+			ja.add(jo);
+		}
+		return ja.toString();
+	}
+
 }

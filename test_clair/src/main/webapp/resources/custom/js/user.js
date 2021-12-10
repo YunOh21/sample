@@ -23,6 +23,61 @@ $(document).ready(function(){
 			 alert('알 수 없는 오류가 발생했습니다.'); // SweetAlert2 인식 못한 경우
 		 } */
 	 }
+
+	 // 페이지 로드 시 현재 SEARCH 테이블 정보로 검색 셀렉트박스 생성
+	 $.ajax({
+		url : '/search',
+		dataType : 'json',
+		success:function(data){
+			const combo = new dhx.Combobox("search", {
+				placeholder: "검색",
+				data: data,
+				css: "selectbox",
+				readOnly: true
+			});
+			// 셀렉트박스 선택값에 따라 input, select, 달력 표시
+			combo.events.on("change", function(id){
+				const search = document.getElementById('search');
+				const levels = document.getElementById('levels');
+				const calendars = document.getElementById('calendars');
+				const texts = document.getElementById('texts');
+				if(id=="1003"){
+					if(levels != null){levels.remove();}
+					if(calendars != null){calendars.remove();}
+					if(texts != null){texts.remove();}
+					// select box
+					search.insertAdjacentHTML(
+					"beforeend",
+					"<select id='levels'></select>"
+					);
+				}else if(id=="1005"){
+					if(levels != null){levels.remove();}
+					if(calendars != null){calendars.remove();}
+					if(texts != null){texts.remove();}
+					// calendar
+					search.insertAdjacentHTML(
+					"afterend",
+					"<div id='calendars'>"
+					+"<input type='text' id='from' class='customDatepicker' readonly>"
+					+"<span style='color: #c0c0c0'>&nbsp;~&nbsp;</span>"
+					+"<input type='text' id='to' class='customDatepicker' readonly></div>"
+					);
+				}else{
+					if(levels != null){levels.remove();}
+					if(calendars != null){calendars.remove();}
+					if(texts != null){texts.remove();}
+					// input
+					search.insertAdjacentHTML(
+					"beforeend",
+					"<input type='text' id='texts'>"
+					);
+				}
+			})
+		}, error:function(){
+			showError("서버연결에 실패하였습니다.");
+		}
+	})
+
 	 // 페이지 로드 시 전체 사용자 데이터 조회 (파일 업로드 성공 시 사용한 url 재사용)
 		$.ajax({
 			url : '/file/success',
@@ -30,16 +85,12 @@ $(document).ready(function(){
 			success:function(data){
 				const grid = new dhx.Grid("grid", {
 					columns: [
-						{ width: 200, id: "id", header: [{ text: "ID" }, { content: "inputFilter" }] },
-						{ width: 200, id: "pwd", header: [{ text: "패스워드" }, { content: "inputFilter" }] },
-						{ width: 150, id: "name", header: [{ text: "이름" }, { content: "inputFilter" }] },
-						{ width: 100, id: "level", header: [{ text: "등급" }, { content: "selectFilter" }] },
-						{ width: 300, id: "desc", header: [{ text: "특이사항" }, { content: "inputFilter" }] },
-						{ width: 248, id: "regDate", 
-							header: [{ text: "생년월일" },
-											{ text : "<input type='text' id='from' class='customDatepicker' readonly><span style='color: #c0c0c0'>&nbsp;~&nbsp;</span><input type='text' id='to' class='customDatepicker' readonly>", headerSort: false}],
-							htmlEnable: true
-						},
+						{ width: 200, id: "id", header: [{ text: "ID" }] },
+						{ width: 200, id: "pwd", header: [{ text: "패스워드" }] },
+						{ width: 150, id: "name", header: [{ text: "이름" }] },
+						{ width: 100, id: "level", header: [{ text: "등급" }] },
+						{ width: 300, id: "desc", header: [{ text: "특이사항" }] },
+						{ width: 248, id: "regDate", header: [{ text: "생년월일" }] }
 					],
 					data: data
 				});

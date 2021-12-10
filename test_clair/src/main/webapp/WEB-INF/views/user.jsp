@@ -44,6 +44,7 @@
 	<section class="dhx_sample-container" style="height: 80%">
 		<div class="flex-container">
 			<div id="welcome" title="클릭하면 모든 사용자를 조회합니다." style="display:none;text-align:center;cursor:pointer" onclick="showGrid()"><img src="/img/welcome.jpg" width="80%"></div>
+			<div id="search" style="float:left"></div>
 			<div id="grid"></div>
 			<div id="pagination" style="padding: 20px;"></div>
 		</div>

@@ -5,6 +5,7 @@ import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import com.test.yun.dto.SearchBean;
 import com.test.yun.dto.UserBean;
 
 
@@ -33,6 +34,12 @@ public class UserMapper implements UserMapperInterface { // 클래스명 변경 필요
 		return sqlSessionTemplate.getMapper(UserMapperInterface.class).selectUser(ub);
 		// 1단계: select 된 행 개수를 java에서 count -- ID 존재여부 확인
 		// 2단계: select 된 pwd가 입력된 pwd와 일치하는지 java에서 비교 -- PWD 일치여부 확인 *DB암호화 처리한 경우에는 불가능함 *케이스 분리
+	}
+	
+	// 검색 selectbox
+	@Override
+	public ArrayList<SearchBean> selectSearch(){
+		return sqlSessionTemplate.getMapper(UserMapperInterface.class).selectSearch();
 	}
 
 }

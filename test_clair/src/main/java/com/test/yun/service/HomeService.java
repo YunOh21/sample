@@ -59,7 +59,7 @@ public class HomeService {
 	
 	// 세션 id가 없는 경우, 파일전송화면으로 리다이렉트
 	public String redirectFileupload(RedirectAttributes ra) {
-		ra.addFlashAttribute("msg", "잘못된 접근입니다. 초기 화면으로 이동합니다.");
+		ra.addFlashAttribute("msg", "세션이 만료되었습니다. 초기 화면으로 이동합니다.");
 		return "redirect:/";
 	}
 	
