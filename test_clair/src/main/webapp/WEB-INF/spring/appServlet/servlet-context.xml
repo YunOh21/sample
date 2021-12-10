@@ -28,6 +28,7 @@
 	<resources mapping="/common/**" location="/resources/common/" />
 	<resources mapping="/codebase/**" location="/resources/codebase/" />
 	<resources mapping="/img/**" location="/resources/img/" />
+	<resources mapping="/custom/**" location="/resources/custom/" />
 
 	<!-- Resolves views selected for rendering by @Controllers to .jsp resources in the /WEB-INF/views directory -->
 	<beans:bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">

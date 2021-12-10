@@ -12,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.ui.Model;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
@@ -41,31 +42,41 @@ public class HomeService {
 	// 로그인폼
 	public String login(HttpSession session, RedirectAttributes ra) {
 		String id = (String)session.getAttribute("id");
-		return id==null? "login.html" : redirectHome(id, ra);
+		return id==null? "login.html" : redirectUser(id, ra);
 	}
 	
 	// 회원가입폼
 	public String join(HttpSession session, RedirectAttributes ra) {
 		String id = (String)session.getAttribute("id");
-		return id==null? "join.html" : redirectHome(id, ra);
+		return id==null? "join.html" : redirectUser(id, ra);
 	}
 	
 	// 세션에 유효한 id가 있을 때, 유저홈으로 리다이렉트 (홈화면, 로그인폼, 회원가입폼에 get 방식으로 접근 시)
-	public String redirectHome(String id, RedirectAttributes ra) {
+	public String redirectUser(String id, RedirectAttributes ra) {
 		ra.addFlashAttribute("msg", "잘못된 접근입니다. 회원 화면으로 이동합니다.");
 		return "redirect:/" + id;
 	}
 	
+	// 세션 id가 없는 경우, 파일전송화면으로 리다이렉트
+	public String redirectFileupload(RedirectAttributes ra) {
+		ra.addFlashAttribute("msg", "잘못된 접근입니다. 초기 화면으로 이동합니다.");
+		return "redirect:/";
+	}
+	
+	// 세션 id가 아닌 루트로 접근한 경우, 파일전송화면으로 리다이렉트
+	public String redirectFileupload(HttpSession session, RedirectAttributes ra) {
+		ra.addFlashAttribute("msg", "잘못된 접근입니다. 회원 화면으로 이동합니다.");
+		return "redirect:/" + session.getAttribute("id");
+	}
+	
 	// 로그인,회원가입 성공
-	public ModelAndView login(HttpSession session) {
-		ModelAndView mav = new ModelAndView();
-		mav.addObject("success", "["+session.getAttribute("name")+" 님]&nbsp;");
+	public String login(HttpSession session, Model model) {
+		model.addAttribute("success", "["+session.getAttribute("name")+" 님]&nbsp;");
 		if(session.getAttribute("join")!=null) {
-			mav.addObject("join", "회원가입이 완료되었습니다!");
+			model.addAttribute("join", "회원가입이 완료되었습니다!");
 			session.setAttribute("join", null); // 회원가입 후 첫 화면에만 welcome 이미지 표시
 		}
-		mav.setViewName("user.jsp");
-		return mav;
+		return "user.jsp";
 	}
 	
 	// 로그아웃

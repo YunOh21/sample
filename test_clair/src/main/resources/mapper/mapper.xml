@@ -9,7 +9,7 @@
 	<select id="selectAll" resultType="com.test.yun.dto.UserBean">
 		SELECT "id", "pwd", "name", "level", "desc", "reg_date" as regDate FROM "USER"	
 	</select>
-	<select id="loginUser" parameterType="com.test.yun.dto.UserBean" resultType="com.test.yun.dto.UserBean">
+	<select id="selectUser" parameterType="com.test.yun.dto.UserBean" resultType="com.test.yun.dto.UserBean">
 		SELECT "id", "pwd", "name", "level", "desc", "reg_date" as regDate FROM "USER" WHERE "id" = #{id}
 	</select>
 </mapper>

@@ -21,10 +21,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -62,54 +64,73 @@ public class HomeController {
 		return homeService.fileupload(session);
 	}
 
-	// 사용자 로그인폼 -- 로그인한 경우 유저 홈 화면으로 이동
+	// 사용자 로그인폼 -- 로그인한 경우 접근불가, 유저 홈 화면으로 리다이렉트
 	@RequestMapping(value = "/user/signin", method = RequestMethod.GET)
 	public String login(HttpSession session, RedirectAttributes ra) {
 		return homeService.login(session, ra);
 	}
 
-	// 사용자 로그인
+	/* 사용자 로그인
+	response code 3가지: 1)로그인 성공: 200 / 2)권한없음-아이디 혹은 패스워드 틀림: 400 / 3)기타오류: 500 */
 	@RequestMapping(value = "/user/signin", method = RequestMethod.POST)
 	@ResponseBody
 	public ResponseEntity<String> login(@RequestBody UserBean userBean, HttpServletRequest req) {
 		ResponseEntity<String> result = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-		if (userMapper.loginUser(userBean).size() == 1) { // id 존재 확인
-			if (homeService.checkPwd(userBean, userMapper.loginUser(userBean).get(0))) { // pwd 일치 확인
-				HttpSession session = req.getSession();
-				session.setAttribute("id", userBean.getId());
-				session.setAttribute("name", userMapper.loginUser(userBean).get(0).getName());
-				Map<String, Object> joMap = new HashMap<String, Object>();
-				joMap.put("uri", "/");
-				joMap.put("id", userBean.getId());
-				JSONObject jo = new JSONObject(joMap);
-				result = new ResponseEntity(jo.toString(), HttpStatus.OK);
+		// DB연결 체크(연결이 안된 경우 or context close 실패한 경우, http status는 위에서 초기화한 값인 500 리턴)
+		Context context=null;
+		try {
+			context = new InitialContext();
+			context.lookup("java:comp/env/postgresqlJndi");
+			if (userMapper.selectUser(userBean).size() == 1) { // id 존재 확인
+				if (homeService.checkPwd(userBean, userMapper.selectUser(userBean).get(0))) { // pwd 일치 확인
+					HttpSession session = req.getSession();
+					session.setAttribute("id", userBean.getId());
+					session.setAttribute("name", userMapper.selectUser(userBean).get(0).getName());
+					Map<String, Object> joMap = new HashMap<String, Object>();
+					joMap.put("uri", "/");
+					joMap.put("id", userBean.getId());
+					JSONObject jo = new JSONObject(joMap);
+					result = new ResponseEntity(jo.toString(), HttpStatus.OK);
+				} else {
+					logger.info("pwd 불일치");
+					result = ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+				}
 			} else {
-				logger.info("pwd 불일치");
+				logger.info("id 없음");
 				result = ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
 			}
-		} else {
-			logger.info("id 없음");
-			result = ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+		}catch(NamingException e){
+			logger.info("DB not connected");
+			e.printStackTrace();
+		}finally {
+			if(context!=null) {
+				try {
+					context.close();
+				} catch (NamingException e) {
+					e.printStackTrace();
+				}
+			}
 		}
 		logger.info(result.toString());
 		return result;
 	}
 
-	// 사용자 가입폼
+	// 사용자 가입폼 -- 로그인한 경우 접근불가, 유저 홈 화면으로 리다이렉트
 	@RequestMapping(value = "/user/signup", method = RequestMethod.GET)
 	public String join(HttpSession session, RedirectAttributes ra) {
 		return homeService.join(session, ra);
 	}
 
-	// 사용자 가입 -- 가입 후 자동 로그인 처리
-	// 가능한 케이스
-	// 1. 회원가입 성공
-	// 2. 입력항목 오류 
-	// 3. 기타오류
+	/* 사용자 가입 -- 가입 후 자동 로그인 처리
+	response code 3가지: 1)회원가입 성공: 200 / 2)입력항목 오류: 400 / 3)기타오류: 500
+	status 400 리턴 시, 에러코드 1001/1002/1003 발생사유는 API 설계에 명시되어 있지 않음 -> 아래 내용은 임의 설정
+	- 1001: pk중복
+	- 1002: data valid 탈락
+	- 1003: DB연결 안된 경우 */
 	@RequestMapping(value = "/user/signup", method = RequestMethod.POST, produces = "application/text; charset=utf8")
 	@ResponseBody
 	public ResponseEntity<String> join(@Valid @RequestBody UserBean userBean, HttpServletRequest req) {
-		// 리소스 서버 클로즈 실패 + 어떤 케이스에도 해당하지 않는 경우 http status를 500으로 리턴함
+		// 리소스 서버 클로즈 실패 or 어떤 케이스에도 해당하지 않는 경우, http status를 500으로 리턴함
 		ResponseEntity<String> result = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
 		
 		/* null, 범위초과 테스트 */
@@ -127,6 +148,7 @@ public class HomeController {
 		LinkedHashMap<String, String> invalidJoinMap = joinValidCheck.validCheck(userBean);
 		logger.info(String.valueOf(invalidJoinMap.size()));
 		if (invalidJoinMap.size() == 0) {
+			// DB연결 체크
 			Context context=null;
 			try {
 				context = new InitialContext();
@@ -140,7 +162,7 @@ public class HomeController {
 					jo.put("uri", "/");
 					jo.put("id", userBean.getId());
 					result = new ResponseEntity(jo.toString(), HttpStatus.OK);
-				} else { // case 2-1: 입력항목 오류(ID 중복 - 에러코드 1001)
+				} else { // case 2-1: ID 중복 - 에러코드 1001
 					logger.info("ID 중복");
 					JSONObject parent = new JSONObject();
 					JSONArray children = new JSONArray();
@@ -154,13 +176,14 @@ public class HomeController {
 					parent.put("fields", children);
 					result = new ResponseEntity(parent.toString(), HttpStatus.BAD_REQUEST);
 				}
-			}catch(NamingException e){ // case 2-2: 입력항목 오류(DB연결 실패 - 에러코드 1003) -- context.xml에서 driverName 부분 오타로 재현
+			}catch(NamingException e){ // case 2-2: DB연결 실패 - 에러코드 1003 (context.xml에서 driverName 부분 오타로 재현)
 				logger.info("DB not connected");
+				e.printStackTrace();
 				JSONObject parent = new JSONObject();
 				JSONArray children = new JSONArray();
 				JSONObject child = new JSONObject();
-				child.put("field", "postgreSQL");
-				child.put("reason", "데이터베이스에 연결할 수 없습니다.");
+				child.put("field", "데이터베이스 연결불가");
+				child.put("reason", "관리자에게 문의하세요.");
 				children.add(child);
 				parent.put("code", 1003);
 				parent.put("message", child.get("reason"));
@@ -196,8 +219,7 @@ public class HomeController {
 		return result;
 	}
 
-	// 회원가입 Validation 예외처리 -- 현재 에러케이스는 처음 컨트롤러에 전달된 상황에서는 발생하지 않음. 추후 적용 시 json으로
-	// 변환 필요.
+	// 회원가입 Validation 예외처리 -- 현재 에러케이스는 처음 컨트롤러에 전달된 상황에서는 발생x, 추후 적용 시 json 리턴 처리 필요
 	@ExceptionHandler(MethodArgumentNotValidException.class)
 	@ResponseBody
 	public String handleValidationException(MethodArgumentNotValidException exception) {
@@ -217,10 +239,21 @@ public class HomeController {
 		return builder.toString();
 	}
 
-	// 로그인, 회원가입 후
+	// 로그인, 회원가입 후 -- 세션에 id가 없거나 세션에 있는 id와 다른 값으로 접근하는 경우 접근불가, 파일전송화면 또는 로그인한 유저 화면으로 리다이렉트
 	@RequestMapping(value = "/{id}", method = RequestMethod.GET)
-	public ModelAndView userHome(HttpSession session) {
-		return homeService.login(session);
+	public String userHome(@PathVariable("id") String id, HttpSession session, RedirectAttributes ra, Model model) {
+		String result;
+		logger.info(id);
+		if(session.getAttribute("id")==null) { // id가 없는 경우
+			result = homeService.redirectFileupload(ra);
+		}else {
+			if(session.getAttribute("id").equals(id)) { // 로그인 id = 이동경로 id
+				result = homeService.login(session, model);
+			}else { // 로그인 id != 이동경로 id
+				result = homeService.redirectFileupload(session, ra);
+			}
+		}
+		return result;
 	}
 
 	// 로그아웃

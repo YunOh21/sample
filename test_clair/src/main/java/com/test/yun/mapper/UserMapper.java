@@ -27,10 +27,10 @@ public class UserMapper implements UserMapperInterface { // 클래스명 변경 필요
 		return sqlSessionTemplate.getMapper(UserMapperInterface.class).selectAll();
 	}
 	
-	// 로그인
+	// 로그인하는 아이디의 정보 조회
 	@Override
-	public ArrayList<UserBean> loginUser(UserBean ub) {
-		return sqlSessionTemplate.getMapper(UserMapperInterface.class).loginUser(ub);
+	public ArrayList<UserBean> selectUser(UserBean ub) {
+		return sqlSessionTemplate.getMapper(UserMapperInterface.class).selectUser(ub);
 		// 1단계: select 된 행 개수를 java에서 count -- ID 존재여부 확인
 		// 2단계: select 된 pwd가 입력된 pwd와 일치하는지 java에서 비교 -- PWD 일치여부 확인 *DB암호화 처리한 경우에는 불가능함 *케이스 분리
 	}

@@ -35,26 +35,27 @@
 	</header>
 	<section class="dhx_sample-container">
 		<div id="grid"></div>
+		<!-- <input type="hidden" id="failData" value="${failData }"></input> -->
 	</section>
 	<script src="https://code.jquery.com/jquery-latest.js"></script>
 	<script>
-		const grid = new dhx.Grid("grid", {
-			columns: [
-				{ width: 80, id: "lineNum", header: [{ text: "라인번호", align: "center" }], align: "center" },
-				{ width: 640, id: "lineText", header: [{ text: "내용" }] },
-				{ width: 498, id: "failReason", header: [{ text: "실패사유" }] },
-			],
-			data: ${failData},
-			// width와 height를 데이터에 맞추는 법: 확인중
-			width: 1200,
-			height: 250,
-			adjust: true
-		});
-		// adjust div height to grid content
-		window.onload = function adjustGrid(){
-			$("#grid").height($(".dhx_grid-body").height());
-			$("#grid").width($(".dhx_grid-body").width());
-		}
+	const grid = new dhx.Grid("grid", {
+		columns: [
+			{ width: 80, id: "lineNum", header: [{ text: "라인번호", align: "center" }], align: "center" },
+			{ width: 640, id: "lineText", header: [{ text: "내용" }] },
+			{ width: 498, id: "failReason", header: [{ text: "실패사유" }] },
+		],
+		data: ${failData},
+		// width와 height를 데이터에 맞추는 법: 확인중
+		width: 1200,
+		height: 250,
+		adjust: true
+	});
+	// adjust div height to grid content
+	window.onload = function adjustGrid() {
+		$("#grid").height($(".dhx_grid-body").height());
+		$("#grid").width($(".dhx_grid-body").width());
+	}
 	</script>
 </body>
 </html>
