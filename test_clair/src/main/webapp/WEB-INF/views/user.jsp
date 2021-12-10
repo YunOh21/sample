@@ -14,38 +14,8 @@
 	<script type="text/javascript" src="/codebase/suite.js?v=7.2.5"></script>
 	<link rel="stylesheet" href="/codebase/suite.css?v=7.2.5">
 	<link rel="stylesheet" href="/common/index.css?v=7.2.5">
+	<link rel="stylesheet" href="/custom/css/user.css">
 </head>
-<style>
-    .flex-container {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      flex-direction: column;
-    }
-    #grid {
-    	width: 1200px;
-    	height: 500px;
-    }
-    #pagination {
-    	width: 300px;
-    }
-    .customDatepicker {
-    	width:105px;
-    	height:28px;
-    	border-radius:2px;
-    	box-shadow:inset 0 0 0 1px #dfdfdf;
-    	border:0;
-    	color: rgba(0,0,0,.7);
-    	padding: 0 25px 0 4px;
-    }
-    .customDatepicker:focus {
-    	outline: none;
-    	box-shadow: 0 0 1px rgba(81, 203, 238, 1);
-  		padding: 3px 0px 3px 3px;
-  		margin: 5px 1px 3px 0px;
-  		border: 1px solid rgba(81, 203, 238, 1);
-    }
-</style>
 <body>
 	<header class="dhx_sample-header">
 		<div class="dhx_sample-header__main">

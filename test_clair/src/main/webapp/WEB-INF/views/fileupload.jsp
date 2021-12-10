@@ -14,52 +14,8 @@
 	<script type="text/javascript" src="/codebase/suite.js?v=7.2.5"></script>
 	<link rel="stylesheet" href="/codebase/suite.css?v=7.2.5">
 	<link rel="stylesheet" href="/common/index.css?v=7.2.5">
+	<link rel="stylesheet" href="/custom/css/fileupload.css">
 </head>
-<style>
-.btn {
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  appearance: none;
-  
-  background: #0288d1;
-  color: #ffffff;
-  
-  margin: 0;
-  padding: 0.5rem 1rem;
-  
-  font-family: 'Noto Sans KR', sans-serif;
-  font-size: 1rem;
-  font-weight: 400;
-  text-align: center;
-  text-decoration: none;
-  
-  border: none;
-  border-radius: 4px;
-  
-  display: inline-block;
-  width: auto;
-  
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-  
-  cursor: pointer;
-  
-  transition: 0.5s;
-}
-.upload-name {
-  display: inline-block;
-  height: 35px;
-  font-size:18px; 
-  padding: 0 10px;
-  vertical-align: middle;
-  background-color: #f5f5f5;
-  border: 1px solid #ebebeb;
-  border-radius: 5px;
-}
-
-#btn {
-	float: right;
-}
-</style>
 <body>
 		<header class="dhx_sample-header">
 			<div class="dhx_sample-header__main">
