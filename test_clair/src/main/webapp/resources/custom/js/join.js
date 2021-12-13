@@ -45,7 +45,8 @@ const form = new dhx.Form("form", {
 			maxlength: "16",
 			required: "true",
 			labelPosition: "left",
-			id: "userPwd"
+			id: "userPwd",
+			icon: "dxi dxi-eye",
 		},
 		{
 			type: "input",
@@ -148,8 +149,24 @@ const form = new dhx.Form("form", {
 
 const send = form.getItem("send");
 
-// 입력 값 확인 후 SEND 버튼 활성화
 $(document).ready(function() {
+	// 눈모양 클릭 시 아이콘 변경, 비밀번호 보이기 -- ing
+	$('.dxi-eye').on('mouseover',function(){
+    
+  });
+	
+	$('.dxi-eye').on('click',function(){
+     $('input').toggleClass('active');
+     if($('input').hasClass('active')){
+         $(this).attr('class',"dxi-eye-off")
+         .prev('input').attr('type',"text");
+     }else{
+         $(this).attr('class',"dxi-eye")
+         .prev('input').attr('type','password');
+     }
+  });
+	
+	// 입력 값 확인 후 SEND 버튼 활성화
 	const regexId = /^(?=.*\d)(?=.*[a-z]).{4,16}$/;
 	const regexPwd = /(?=.{8,})((?=.*\d)(?=.*[a-z])(?=.*[A-Z])|(?=.*\d)(?=.*[a-zA-Z])(?=.*[\W_])|(?=.*[a-z])(?=.*[A-Z])(?=.*[\W_])).*/;
 	const regexDate = /^\d{4}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])$/
