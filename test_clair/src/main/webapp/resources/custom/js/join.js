@@ -46,7 +46,7 @@ const form = new dhx.Form("form", {
 			required: "true",
 			labelPosition: "left",
 			id: "userPwd",
-			icon: "dxi dxi-eye",
+			icon: "dxi dxi-eye"
 		},
 		{
 			type: "input",
@@ -150,22 +150,7 @@ const form = new dhx.Form("form", {
 const send = form.getItem("send");
 
 $(document).ready(function() {
-	// 눈모양 클릭 시 아이콘 변경, 비밀번호 보이기 -- ing
-	$('.dxi-eye').on('mouseover',function(){
-    
-  });
-	
-	$('.dxi-eye').on('click',function(){
-     $('input').toggleClass('active');
-     if($('input').hasClass('active')){
-         $(this).attr('class',"dxi-eye-off")
-         .prev('input').attr('type',"text");
-     }else{
-         $(this).attr('class',"dxi-eye")
-         .prev('input').attr('type','password');
-     }
-  });
-	
+
 	// 입력 값 확인 후 SEND 버튼 활성화
 	const regexId = /^(?=.*\d)(?=.*[a-z]).{4,16}$/;
 	const regexPwd = /(?=.{8,})((?=.*\d)(?=.*[a-z])(?=.*[A-Z])|(?=.*\d)(?=.*[a-zA-Z])(?=.*[\W_])|(?=.*[a-z])(?=.*[A-Z])(?=.*[\W_])).*/;
@@ -226,6 +211,11 @@ const hangeul = /[ㄱ-ㅎ|ㅏ-ㅣ|가-힣]/;
 const special = /[\{\}\[\]\/?.,;:|\)*~`!^\-_+┼<>@\#$%&\'\"\\\(\=]/gi;
 // const space = /\s/g; -- 공백 정규식: dhtmlx input 자체에서 스페이스 입력 시 공백처리(문구는 발생x)
 const num = /\d/;
+
+// 눈모양 클릭 시 아이콘 변경, 비밀번호 보이기 -- ing
+$('.dxi').on("click", function(){
+	form.getItem("pwd").setProperties({icon: "dxi dxi-eye-off", inputType: "text"});
+});
 
 // ID에 한글,특수문자 입력 불가
 form.getItem("id").events.on("input", function() {
